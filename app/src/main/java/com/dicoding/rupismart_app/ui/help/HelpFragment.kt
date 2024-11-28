@@ -15,9 +15,6 @@ import com.dicoding.rupismart_app.ui.setting.SettingActivity
 class HelpFragment : Fragment() {
 
     private var _binding: FragmentHelpBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     override fun onCreateView(
