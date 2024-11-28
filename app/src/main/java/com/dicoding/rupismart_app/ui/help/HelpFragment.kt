@@ -45,7 +45,7 @@ class HelpFragment : Fragment() {
             }
         }
     }
-
+//Test
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
