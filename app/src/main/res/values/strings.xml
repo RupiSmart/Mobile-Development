@@ -4,4 +4,10 @@
     <string name="title_camera">Scan</string>
     <string name="title_help">Help</string>
     <string name="title_setting">Setting</string>
+    <string name="lang_title">Bahasa</string>
+    <string name="language_app_icon">Language App Icon</string>
+    <string name="click_to_change_lang">click to change language</string>
+    <string name="pref_title">Preferences</string>
+    <string name="dark_mode_pref">Dark Mode</string>
+    <string name="text_to_speech">Text-to-Speech</string>
 </resources>
