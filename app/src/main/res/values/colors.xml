@@ -7,8 +7,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="grey_700">#747272</color>"
-    <color name="grey_200">#E3E0E0</color>"
-    <color name="grey_100">#F3F3F3</color>
-    <color name="blue_700">#546FFD</color>"
+    <color name="grey_700">#747272</color>
+    <color name="setting_stroke">#D9D9D9</color>
+    <color name="setting_bg_card">#ededed</color>
+    <color name="blue_700">#546FFD</color>
 </resources>

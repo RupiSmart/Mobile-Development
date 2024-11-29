@@ -7,26 +7,25 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.dicoding.rupismart_app.R
+import com.dicoding.rupismart_app.ViewModelFactory
 import com.dicoding.rupismart_app.databinding.FragmentHistoryBinding
+import com.dicoding.rupismart_app.ui.help.HelpViewModel
 import com.dicoding.rupismart_app.ui.setting.SettingActivity
 
 class HistoryFragment : Fragment() {
-
     private var _binding: FragmentHistoryBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
-
+    private val viewModel by viewModels<HistoryViewModel> {
+        ViewModelFactory.getInstance(requireContext())
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val historyViewModel =
-            ViewModelProvider(this).get(HistoryViewModel::class.java)
 
         _binding = FragmentHistoryBinding.inflate(inflater, container, false)
         val root: View = binding.root

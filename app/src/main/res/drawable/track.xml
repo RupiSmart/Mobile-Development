@@ -8,7 +8,7 @@
             <solid android:color="@color/blue_700"/>
             <size android:height="2dp"/>
             <corners android:radius="100dp"/>
-            <stroke android:color="@color/grey_100"/>
+            <stroke android:color="@color/setting_bg_card"/>
         </shape>
     </item>
     <item

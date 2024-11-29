@@ -135,7 +135,7 @@
             android:layout_height="1dp"
             android:layout_below="@id/iv_dark_mode_setting"
             android:layout_marginTop="16dp"
-            android:background="@color/grey_200" />
+            android:background="@color/setting_stroke" />
         <ImageView
             android:layout_marginTop="20dp"
             android:id="@+id/iv_text_to_speech"

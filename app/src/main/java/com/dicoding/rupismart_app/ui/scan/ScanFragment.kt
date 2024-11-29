@@ -10,19 +10,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.dicoding.rupismart_app.R
+import com.dicoding.rupismart_app.ViewModelFactory
 import com.dicoding.rupismart_app.databinding.FragmentScanBinding
 import com.dicoding.rupismart_app.ui.setting.SettingActivity
 
 class ScanFragment : Fragment() {
-
+    private val viewModel by viewModels<ScanViewModel> {
+        ViewModelFactory.getInstance(requireContext())
+    }
     private var _binding: FragmentScanBinding? = null
     private val binding get() = _binding!!
 
@@ -50,8 +55,7 @@ class ScanFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val scanViewModel =
-            ViewModelProvider(this)[ScanViewModel::class.java]
+
 
         _binding = FragmentScanBinding.inflate(inflater, container, false)
         val root: View = binding.root

@@ -1,4 +1,4 @@
-package com.dicoding.rupismart_app.response
+package com.dicoding.rupismart_app.data.remote.response
 
 import com.google.gson.annotations.SerializedName
 
