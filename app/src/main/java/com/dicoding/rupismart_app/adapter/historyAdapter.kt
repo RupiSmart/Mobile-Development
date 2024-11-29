@@ -2,18 +2,15 @@ package com.dicoding.rupismart_app.adapter
 
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.dicoding.rupismart_app.R
 import com.dicoding.rupismart_app.databinding.ItemHistoryBinding
 import com.dicoding.rupismart_app.data.remote.response.HistoryItem
-
-import java.text.SimpleDateFormat
 
 class historyAdapter: ListAdapter<HistoryItem, historyAdapter.MyViewHolder>(historyAdapter.DIFF_CALLBACK) {
 
@@ -34,8 +31,14 @@ class historyAdapter: ListAdapter<HistoryItem, historyAdapter.MyViewHolder>(hist
     }
     class MyViewHolder(private val binding: ItemHistoryBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(history: HistoryItem){
+            val context = binding.root.context
+
+
+
+            binding.tvItem.text = if(history.isReal) context.getString(R.string.real_money) else context.getString(R.string.fake_money)
             binding.tvNominal.text = history.nominal.toString()
-            val tvDesc = binding.tvDesc
+            binding.tvDateTime.text = history.timestamp
+            val tvDesc = binding.tvItem
             tvDesc.paintFlags = tvDesc.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         }
 

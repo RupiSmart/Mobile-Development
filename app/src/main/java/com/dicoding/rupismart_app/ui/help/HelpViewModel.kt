@@ -4,11 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.dicoding.rupismart_app.RupiSmartRepository
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 class HelpViewModel(private val rupiSmartRepository: RupiSmartRepository) : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is help Fragment"
-    }
-    val text: LiveData<String> = _text
+    val getAllHelp = rupiSmartRepository.getAllHelp()
 }

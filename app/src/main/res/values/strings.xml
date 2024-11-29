@@ -10,4 +10,7 @@
     <string name="pref_title">Preferences</string>
     <string name="dark_mode_pref">Dark Mode</string>
     <string name="text_to_speech">Text-to-Speech</string>
+    <string name="real_money">Uang Asli</string>
+    <string name="fake_money">Uang Palsu</string>
+    <string name="todo">todo</string>
 </resources>

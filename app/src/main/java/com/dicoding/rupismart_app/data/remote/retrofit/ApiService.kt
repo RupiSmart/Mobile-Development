@@ -1,11 +1,15 @@
 package com.dicoding.rupismart_app.data.remote.retrofit
 
+    import com.dicoding.rupismart_app.data.remote.response.HelpResponse
     import com.dicoding.rupismart_app.data.remote.response.HistoryResponse
-    import retrofit2.Call
-    import retrofit2.http.*
+    import retrofit2.http.GET
 
-    interface ApiService {
+interface ApiService {
+    @GET("help")
+    suspend fun getAllHelp(
+    ) : HelpResponse
 
-        @GET("history")
-        fun getAllHistory() : HistoryResponse
-    }
+    @GET("history")
+    suspend fun getAllHistory(
+    ) : HistoryResponse
+}
