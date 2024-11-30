@@ -27,8 +27,9 @@ class IntroActivity : AppCompatActivity() {
     }
 
     private fun playAnimation(){
-        ObjectAnimator.ofFloat(binding.textView, View.ALPHA, 1F).apply {
-            startDelay = 1400
+        ObjectAnimator.ofFloat(binding.ivIntro, View.ALPHA, 1F).apply {
+            startDelay = 500
+            duration = 1000
         }.start()
     }
 

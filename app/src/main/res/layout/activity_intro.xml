@@ -7,16 +7,15 @@
     android:layout_height="match_parent"
     tools:context=".ui.intro.IntroActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="INI SPLASH SCREEN YA BGST"
-        android:textSize="25sp"
+    <ImageView
+        android:id="@+id/ivIntro"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/logo_icon"
         android:alpha="0"
         tools:alpha="100"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
