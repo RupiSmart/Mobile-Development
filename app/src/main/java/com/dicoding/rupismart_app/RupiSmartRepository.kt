@@ -1,7 +1,9 @@
 package com.dicoding.rupismart_app
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import com.dicoding.rupismart_app.data.pref.RupiSmartPreference
 import com.dicoding.rupismart_app.data.remote.response.HelpResponse
@@ -17,6 +19,14 @@ class RupiSmartRepository private constructor(
     private val appExecutors: AppExecutors,
     private val rupismartPreference: RupiSmartPreference
 ) {
+    fun getDarkMode(): LiveData<Boolean> {
+        return rupismartPreference.getDarkMode().asLiveData()
+    }
+
+    suspend fun saveDarkMode(isDarkMode: Boolean) {
+        rupismartPreference.saveDarkMode(isDarkMode)
+    }
+    @SuppressLint("SuspiciousIndentation")
     fun getAllHistory(): LiveData<Result<HistoryResponse>> = liveData {
         emit(Result.Loading)
         try {
@@ -42,6 +52,8 @@ class RupiSmartRepository private constructor(
         } catch (e: Exception) {
             emit(Result.Error(e.message.toString()))
         }
+
+
     }
 
     companion object {
@@ -56,4 +68,5 @@ class RupiSmartRepository private constructor(
                 instance ?: RupiSmartRepository(apiService, appExecutors, rupismartPreferences)
             }.also { instance = it }
     }
+
 }

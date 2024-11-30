@@ -112,7 +112,7 @@
             android:background="@drawable/bg_setting_iv"
             />
         <TextView
-            android:id="@+id/tv_dark_mode_setting"
+            android:id="@+id/tv_mode_setting"
             android:layout_marginStart="8dp"
             android:textStyle="bold"
             android:layout_marginTop="10dp"
@@ -123,6 +123,7 @@
             android:text="@string/dark_mode_pref"
             tools:ignore="RelativeOverlap" />
         <Switch
+            android:id="@+id/swith_mode"
             android:checked="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
