@@ -1,7 +1,10 @@
 package com.dicoding.rupismart_app.ui.setting
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.View
 import android.widget.CompoundButton
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +25,7 @@ class SettingActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         supportActionBar?.hide()
+        playAnimation()
         setupView()
         setupAction()
 
@@ -44,6 +48,25 @@ class SettingActivity : AppCompatActivity() {
     private fun setupAction(){
         binding.swithMode.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
             viewModel.toggleDarkMode(isChecked)
+        }
+    }
+
+    private fun playAnimation(){
+        val appBar = ObjectAnimator.ofFloat(binding.appBarLayout, View.ALPHA, 1F).setDuration(400)
+        val tvLangSetting = ObjectAnimator.ofFloat(binding.tvLangSetting, View.ALPHA, 1F).setDuration(400)
+        val rlLangSetting = ObjectAnimator.ofFloat(binding.rlLangSetting, View.ALPHA, 1F).setDuration(400)
+        val tvPrefSettingTitle = ObjectAnimator.ofFloat(binding.tvPrefSettingTitle, View.ALPHA, 1F).setDuration(400)
+        val rlPrefSetting = ObjectAnimator.ofFloat(binding.rlPrefSetting, View.ALPHA, 1F).setDuration(400)
+        AnimatorSet().apply {
+            playTogether(
+                appBar,
+                tvLangSetting,
+                rlLangSetting,
+                tvPrefSettingTitle,
+                rlPrefSetting
+            )
+            startDelay = 500
+            start()
         }
     }
 

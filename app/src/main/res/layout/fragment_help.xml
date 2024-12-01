@@ -12,7 +12,9 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:alpha="0"
+        tools:alpha="100">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/mainAppBar"
@@ -23,11 +25,13 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_history"
+        android:id="@+id/rv_help"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
+        android:alpha="0"
+        tools:alpha="100"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

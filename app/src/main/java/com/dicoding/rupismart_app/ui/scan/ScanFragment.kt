@@ -1,6 +1,8 @@
 package com.dicoding.rupismart_app.ui.scan
 
 import android.Manifest
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -66,6 +68,8 @@ class ScanFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        playAnimation()
+
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
 
         if (!allPermissionGranted()){
@@ -108,6 +112,15 @@ class ScanFragment : Fragment() {
                 Log.e(TAG, "startCamera: ${exc.message}")
             }
         }, ContextCompat.getMainExecutor(requireContext()))
+    }
+
+    private fun playAnimation(){
+        val appBar = ObjectAnimator.ofFloat(binding.appBarLayout, View.ALPHA, 1F).setDuration(400)
+        AnimatorSet().apply {
+            playSequentially(appBar)
+            startDelay = 500
+            start()
+        }
     }
 
     override fun onResume() {

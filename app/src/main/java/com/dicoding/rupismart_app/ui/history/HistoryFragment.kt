@@ -1,5 +1,7 @@
 package com.dicoding.rupismart_app.ui.history
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -38,6 +40,8 @@ class HistoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        playAnimation()
+
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         val adapter = historyAdapter()
         viewModel.getAllHistory.observe(viewLifecycleOwner){result->
@@ -64,6 +68,16 @@ class HistoryFragment : Fragment() {
                 }
                 else -> false
             }
+        }
+    }
+
+    private fun playAnimation(){
+        val appBar = ObjectAnimator.ofFloat(binding.appBarLayout, View.ALPHA, 1F).setDuration(400)
+        val rvHistory = ObjectAnimator.ofFloat(binding.rvHistory, View.ALPHA, 1F).setDuration(400)
+        AnimatorSet().apply {
+            playSequentially(appBar, rvHistory)
+            startDelay = 500
+            start()
         }
     }
 

@@ -14,7 +14,9 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:alpha="0"
+        tools:alpha="100">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/mainAppBar"
@@ -33,7 +35,9 @@
         android:text="@string/lang_title"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
+        android:alpha="0"
+        tools:alpha="100"/>
 
     <RelativeLayout
         android:paddingHorizontal="15dp"
@@ -45,7 +49,9 @@
         android:layout_marginHorizontal="15dp"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_lang_setting_title">
+        app:layout_constraintTop_toBottomOf="@+id/tv_lang_setting_title"
+        android:alpha="0"
+        tools:alpha="100">
 
         <ImageView
             android:id="@+id/iv_lang_setting"
@@ -79,7 +85,6 @@
             />
     </RelativeLayout>
     <TextView
-
         android:id="@+id/tv_pref_setting_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -88,7 +93,10 @@
         android:text="@string/pref_title"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rl_lang_setting" />
+        app:layout_constraintTop_toBottomOf="@+id/rl_lang_setting"
+        android:alpha="0"
+        tools:alpha="100"/>
+
     <RelativeLayout
         android:id="@+id/rl_pref_setting"
         android:paddingHorizontal="15dp"
@@ -99,7 +107,9 @@
         android:layout_marginHorizontal="15dp"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_pref_setting_title">
+        app:layout_constraintTop_toBottomOf="@+id/tv_pref_setting_title"
+        android:alpha="0"
+        tools:alpha="100">
 
         <ImageView
             android:id="@+id/iv_dark_mode_setting"

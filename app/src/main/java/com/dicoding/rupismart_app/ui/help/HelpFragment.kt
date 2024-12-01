@@ -1,5 +1,7 @@
 package com.dicoding.rupismart_app.ui.help
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -39,6 +41,7 @@ class HelpFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        playAnimation()
         val adapter = helpAdapter()
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         viewModel.getAllHelp.observe(viewLifecycleOwner){result->
@@ -49,9 +52,9 @@ class HelpFragment : Fragment() {
                 }
                 is Result.Success -> {
                     adapter.submitList(result.data.categories).apply {
-                        binding.rvHistory.setHasFixedSize(true)
-                        binding.rvHistory.layoutManager = LinearLayoutManager(requireContext())
-                        binding.rvHistory.adapter = adapter
+                        binding.rvHelp.setHasFixedSize(true)
+                        binding.rvHelp.layoutManager = LinearLayoutManager(requireContext())
+                        binding.rvHelp.adapter = adapter
                     }
                 }
 
@@ -67,7 +70,17 @@ class HelpFragment : Fragment() {
             }
         }
     }
-//Test
+
+    private fun playAnimation(){
+        val appBar = ObjectAnimator.ofFloat(binding.appBarLayout, View.ALPHA, 1F).setDuration(400)
+        val rvHistory = ObjectAnimator.ofFloat(binding.rvHelp, View.ALPHA, 1F).setDuration(400)
+        AnimatorSet().apply {
+            playSequentially(appBar, rvHistory)
+            startDelay = 500
+            start()
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
