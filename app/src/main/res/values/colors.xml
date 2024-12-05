@@ -9,6 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="grey_700">#747272</color>
     <color name="setting_stroke">#D9D9D9</color>
-    <color name="setting_bg_card">#ededed</color>
+    <color name="setting_bg_card">#ffffff</color>
     <color name="blue_700">#546FFD</color>
 </resources>

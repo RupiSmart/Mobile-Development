@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.dicoding.rupismart_app" />
+                  <option name="mobileSdkAppId" value="1:711694495589:android:0da7de0b7f1d4e06e33b8c" />
+                  <option name="projectId" value="rupismart" />
+                  <option name="projectNumber" value="711694495589" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

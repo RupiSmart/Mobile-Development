@@ -3,7 +3,9 @@ package com.dicoding.rupismart_app.ui.setting
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import android.widget.CompoundButton
 import androidx.activity.viewModels
@@ -30,7 +32,9 @@ class SettingActivity : AppCompatActivity() {
         setupAction()
 
         binding.mainAppBar.setNavigationOnClickListener { onBackPressed() }
-
+        binding.ivLangSetting.setOnClickListener{
+            startActivity(Intent(Settings.ACTION_LOCALE_SETTINGS))
+        }
         viewModel.darkMode.observe(this) { isDarkMode ->
             ThemeisDark(isDarkMode)
             binding.swithMode.isChecked = isDarkMode

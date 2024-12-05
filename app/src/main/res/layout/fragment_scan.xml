@@ -43,8 +43,9 @@
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
         app:layout_constraintWidth_percent="0.85"
         tools:ignore="VisualLintBounds" />
-    
+
     <ImageView
+        android:id="@+id/left_icon"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:src="@drawable/scanner"
@@ -79,4 +80,89 @@
         app:layout_constraintRight_toRightOf="@id/previewArea"
         tools:ignore="ContentDescription,VisualLintBounds" />
 
+    <RelativeLayout
+        android:id="@+id/notification_result"
+        android:paddingHorizontal="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@drawable/rounded_card_blue"
+        android:orientation="vertical"
+        android:elevation="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginHorizontal="20dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        >
+
+        <RelativeLayout
+            android:layout_marginTop="2dp"
+            android:gravity="center"
+            android:layout_alignParentTop="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_marginEnd="5dp"
+                android:layout_marginStart="10dp"
+                android:id="@+id/icon_text_notif"
+                android:textColor="@color/white"
+                android:src="@drawable/baseline_check_circle_24"
+                android:layout_width="15dp"
+                android:layout_marginTop="2dp"
+                android:layout_height="15dp" />
+            <TextView
+                android:layout_toEndOf="@+id/icon_text_notif"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="TERVERIFIKASI"/>
+            <ImageView
+                android:scaleType="fitCenter"
+                android:layout_alignParentEnd="true"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/logo_icon_notif"
+                />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/nominal_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/nominal_number"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="15dp"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="35sp"
+            android:textStyle="bold"
+            tools:text="Rp.100.000" />
+
+        <TextView
+            android:layout_alignParentBottom="true"
+            android:id="@+id/nominal_number"
+            android:textStyle="bold"
+            android:paddingVertical="15dp"
+            android:paddingHorizontal="10dp"
+            android:textSize="18sp"
+            android:textAlignment="center"
+            android:background="@drawable/rounded_card_blue_200"
+            android:textColor="@color/white"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="6dp"
+            android:layout_height="wrap_content"
+            tools:text="Sepuluh Ribu Rupiah"/>
+    </RelativeLayout>
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progressIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:indeterminate="true"
+        android:visibility="gone" />
 </androidx.constraintlayout.widget.ConstraintLayout>

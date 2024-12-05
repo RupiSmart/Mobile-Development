@@ -1,6 +1,7 @@
 package com.dicoding.rupismart_app.ui.camera
 
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import androidx.appcompat.app.AppCompatActivity
 import com.dicoding.rupismart_app.databinding.ActivityCameraBinding
 

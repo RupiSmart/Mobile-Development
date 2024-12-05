@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "711694495589",
+    "project_id": "rupismart",
+    "storage_bucket": "rupismart.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:711694495589:android:0da7de0b7f1d4e06e33b8c",
+        "android_client_info": {
+          "package_name": "com.dicoding.rupismart_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGkXdl6wQ7gzynV_zejjPWL5fuiQoNVyw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

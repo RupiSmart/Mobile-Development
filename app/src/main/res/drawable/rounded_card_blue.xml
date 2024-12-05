@@ -1,0 +1,9 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#4964F0" /> <!-- Warna biru -->
+    <corners android:radius="10dp" /> <!-- Radius untuk melengkungkan sudut -->
+    <padding
+        android:left="8dp"
+        android:right="8dp"
+        android:top="8dp"
+        android:bottom="8dp" />
+</shape>

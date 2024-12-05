@@ -6,30 +6,40 @@ import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.dicoding.rupismart_app.R
 import com.dicoding.rupismart_app.ViewModelFactory
+import com.dicoding.rupismart_app.data.Result
 import com.dicoding.rupismart_app.databinding.FragmentScanBinding
 import com.dicoding.rupismart_app.ui.setting.SettingActivity
+import com.dicoding.rupismart_app.utils.duce
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.io.File
+import java.util.Locale
 
 class ScanFragment : Fragment() {
     private val viewModel by viewModels<ScanViewModel> {
         ViewModelFactory.getInstance(requireContext())
     }
+    private var onProcess = false
+    private lateinit var tts:TextToSpeech
     private var _binding: FragmentScanBinding? = null
     private val binding get() = _binding!!
 
@@ -57,8 +67,6 @@ class ScanFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-
         _binding = FragmentScanBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
@@ -72,43 +80,139 @@ class ScanFragment : Fragment() {
 
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
 
-        if (!allPermissionGranted()){
+        if (!allPermissionGranted()) {
             requestPermissionLauncher.launch(REQUIRED_PERMISSION)
         }
 
         binding.mainAppBar.setOnMenuItemClickListener { menuItem ->
-            when(menuItem.itemId){
+            when (menuItem.itemId) {
                 R.id.setting -> {
                     startActivity(Intent(requireContext(), SettingActivity::class.java))
                     true
                 }
+
                 else -> false
             }
         }
-
+        startAction()
         startCamera()
+
+        viewModel.uploadResult.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is Result.Success -> {
+                    val nominal = result.data.result.nominal
+                    val isKoin = result.data.result.isKoin
+                        binding.progressIndicator.visibility = View.GONE
+                    lifecycleScope.launch {
+                        binding.notificationResult.visibility = View.VISIBLE
+                        binding.nominalText.text = nominal
+                        tspeech(nominal)
+                        delay(2000)
+                        binding.notificationResult.visibility = View.GONE
+                        onProcess=false
+                    }
+                }
+
+                is Result.Error -> {
+                    onProcess=false
+                   tspeech(result.error)
+
+                    binding.progressIndicator.visibility = View.GONE
+                    Toast.makeText(requireContext(), "Gagal Mengambil Gambar", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is Result.Loading -> {
+                    onProcess=true
+                    binding.progressIndicator.visibility = View.VISIBLE
+                }
+            }
+        }
     }
+
+    private fun tspeech(message: String) {
+        tts= TextToSpeech(requireContext(),TextToSpeech.OnInitListener {
+            if(it==TextToSpeech.SUCCESS){
+
+                val defaultLocale = Locale.getDefault()
+                    tts.setLanguage(defaultLocale)
+                tts.setSpeechRate(1.0f)
+                tts.speak(message, TextToSpeech.QUEUE_ADD, null, null)
+            }
+        })
+    }
+
+    private fun startAction() {
+        binding.viewFinder.setOnClickListener {
+            if( onProcess==false){
+
+                shutterOn()
+            }else{
+                tspeech("Sedang Melakukan Scan, Harap tunggu")
+            }
+        }
+    }
+
+private lateinit var imageCapture:ImageCapture
+
+    private fun shutterOn() {
+        val imageCapture = imageCapture ?: return
+        val photoFile = File(
+            requireContext().getExternalFilesDir(null),
+            "IMG_${System.currentTimeMillis()}.jpg"
+        )
+
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+
+        imageCapture.takePicture(
+            outputOptions,
+            ContextCompat.getMainExecutor(requireContext()),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onError(exc: ImageCaptureException) {
+
+                }
+
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    duce(photoFile).also {
+                       viewModel.uploadImage(it)
+                    }
+
+
+                }
+            }
+        )
+    }
+
+
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener({
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+
+            // Inisialisasi Preview
             val preview = Preview.Builder()
                 .build()
                 .also {
                     it.surfaceProvider = binding.viewFinder.surfaceProvider
                 }
 
+            // Inisialisasi ImageCapture
+            imageCapture = ImageCapture.Builder()
+                .setTargetRotation(binding.viewFinder.display.rotation)
+                .build()
+
             try {
+                // Unbind semua sebelumnya dan bind ke lifecycle fragment
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(
                     this,
                     cameraSelector,
-                    preview
+                    preview,
+                    imageCapture
                 )
             } catch (exc: Exception) {
-                Toast.makeText(requireContext(), "Gagal Memunculkan Camera", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(requireContext(), "Gagal Memunculkan Kamera", Toast.LENGTH_SHORT).show()
                 Log.e(TAG, "startCamera: ${exc.message}")
             }
         }, ContextCompat.getMainExecutor(requireContext()))

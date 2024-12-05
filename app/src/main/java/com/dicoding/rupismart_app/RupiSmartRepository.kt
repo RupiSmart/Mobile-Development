@@ -11,8 +11,19 @@ import com.dicoding.rupismart_app.data.remote.retrofit.ApiService
 import com.dicoding.rupismart_app.utils.AppExecutors
 import com.google.gson.Gson
 import retrofit2.HttpException
-import com.dicoding.rupismart_app.data.Result
 import com.dicoding.rupismart_app.data.remote.response.HistoryResponse
+import com.dicoding.rupismart_app.data.remote.response.PredictResponse
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+import com.dicoding.rupismart_app.data.Result
+import com.dicoding.rupismart_app.data.remote.retrofit.RetrofitInstance
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class RupiSmartRepository private constructor(
     private val apiService: ApiService,
@@ -53,6 +64,29 @@ class RupiSmartRepository private constructor(
             emit(Result.Error(e.message.toString()))
         }
 
+
+    }
+     fun uploadImage(imageFile: File): LiveData<Result<PredictResponse>> = liveData {
+        emit(Result.Loading)
+        try {
+            val retrofit = Retrofit.Builder()
+                .baseUrl("https://rupismart-ml-138626623402.asia-southeast1.run.app/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+
+            val services = retrofit.create(ApiService::class.java)
+            val requestFile = imageFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
+            val body = MultipartBody.Part.createFormData("image", imageFile.name, requestFile)
+
+            val response = services.uploadImage(body)
+            emit(Result.Success(response))
+        } catch (e: HttpException) {
+            val jsonInString = e.response()?.errorBody()?.string()
+            val errorBody = Gson().fromJson(jsonInString, HelpResponse::class.java)
+            emit(Result.Error(errorBody.toString()))
+        } catch (e: Exception) {
+            emit(Result.Error(e.message.toString()))
+        }
 
     }
 
