@@ -9,10 +9,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.dicoding.rupismart_app.R
+import com.dicoding.rupismart_app.data.local.entity.HistoryEntity
 import com.dicoding.rupismart_app.databinding.ItemHistoryBinding
-import com.dicoding.rupismart_app.data.remote.response.HistoryItem
+import com.dicoding.rupismart_app.utils.formatTimestamp
 
-class historyAdapter: ListAdapter<HistoryItem, historyAdapter.MyViewHolder>(historyAdapter.DIFF_CALLBACK) {
+class historyAdapter: ListAdapter<HistoryEntity, historyAdapter.MyViewHolder>(historyAdapter.DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val binding = ItemHistoryBinding.inflate(LayoutInflater.from(parent.context),parent,false)
@@ -30,14 +31,14 @@ class historyAdapter: ListAdapter<HistoryItem, historyAdapter.MyViewHolder>(hist
 
     }
     class MyViewHolder(private val binding: ItemHistoryBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(history: HistoryItem){
+        fun bind(history: HistoryEntity){
             val context = binding.root.context
 
 
 
-            binding.tvItem.text = if(history.isReal) context.getString(R.string.real_money) else context.getString(R.string.fake_money)
+            binding.tvItem.text = if(history.isKoin) context.getString(R.string.not_coin) else context.getString(R.string.coin)
             binding.tvNominal.text = history.nominal.toString()
-            binding.tvDateTime.text = history.timestamp
+            binding.tvDateTime.text = history.timestamp.formatTimestamp()
             val tvDesc = binding.tvItem
             tvDesc.paintFlags = tvDesc.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         }
@@ -45,13 +46,13 @@ class historyAdapter: ListAdapter<HistoryItem, historyAdapter.MyViewHolder>(hist
 
     }
     companion object{
-        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<HistoryItem>() {
-            override fun areItemsTheSame(oldItem: HistoryItem, newItem: HistoryItem): Boolean {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<HistoryEntity>() {
+            override fun areItemsTheSame(oldItem: HistoryEntity, newItem: HistoryEntity): Boolean {
                 return oldItem==newItem
             }
 
             @SuppressLint("DiffUtilEquals")
-            override fun areContentsTheSame(oldItem: HistoryItem, newItem: HistoryItem): Boolean {
+            override fun areContentsTheSame(oldItem: HistoryEntity, newItem: HistoryEntity): Boolean {
                 return oldItem==newItem
             }
 

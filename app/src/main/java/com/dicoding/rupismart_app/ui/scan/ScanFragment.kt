@@ -28,30 +28,31 @@ import com.dicoding.rupismart_app.ViewModelFactory
 import com.dicoding.rupismart_app.data.Result
 import com.dicoding.rupismart_app.databinding.FragmentScanBinding
 import com.dicoding.rupismart_app.ui.setting.SettingActivity
-import com.dicoding.rupismart_app.utils.duce
+import com.dicoding.rupismart_app.utils.reduceIMage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Locale
-
 class ScanFragment : Fragment() {
     private val viewModel by viewModels<ScanViewModel> {
         ViewModelFactory.getInstance(requireContext())
     }
     private var onProcess = false
-    private lateinit var tts:TextToSpeech
+    private lateinit var tts: TextToSpeech
     private var _binding: FragmentScanBinding? = null
     private val binding get() = _binding!!
+    private lateinit var photoFile: File
 
     private var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+    private lateinit var imageCapture: ImageCapture
 
     private val requestPermissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()
-        ){ isGranted ->
-            if (isGranted){
+        ) { isGranted ->
+            if (isGranted) {
                 startCamera()
-            }else{
+            } else {
                 Toast.makeText(requireContext(), "Permission request denied", Toast.LENGTH_LONG).show()
             }
         }
@@ -63,19 +64,16 @@ class ScanFragment : Fragment() {
         ) == PackageManager.PERMISSION_GRANTED
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentScanBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
         return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         playAnimation()
 
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
@@ -90,40 +88,39 @@ class ScanFragment : Fragment() {
                     startActivity(Intent(requireContext(), SettingActivity::class.java))
                     true
                 }
-
                 else -> false
             }
         }
+
         startAction()
         startCamera()
 
         viewModel.uploadResult.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Result.Success -> {
+                    photoFile?.delete()
                     val nominal = result.data.result.nominal
-                    val isKoin = result.data.result.isKoin
-                        binding.progressIndicator.visibility = View.GONE
+                    binding.progressIndicator.visibility = View.GONE
                     lifecycleScope.launch {
                         binding.notificationResult.visibility = View.VISIBLE
                         binding.nominalText.text = nominal
                         tspeech(nominal)
                         delay(2000)
                         binding.notificationResult.visibility = View.GONE
-                        onProcess=false
+                        onProcess = false
                     }
                 }
 
                 is Result.Error -> {
-                    onProcess=false
-                   tspeech(result.error)
-
+                    photoFile?.delete()
+                    onProcess = false
+                    tspeech("Gagal Mengambil data, Coba lagi")
                     binding.progressIndicator.visibility = View.GONE
                     Toast.makeText(requireContext(), "Gagal Mengambil Gambar", Toast.LENGTH_SHORT)
                         .show()
                 }
-
                 is Result.Loading -> {
-                    onProcess=true
+                    onProcess = true
                     binding.progressIndicator.visibility = View.VISIBLE
                 }
             }
@@ -131,35 +128,35 @@ class ScanFragment : Fragment() {
     }
 
     private fun tspeech(message: String) {
-        tts= TextToSpeech(requireContext(),TextToSpeech.OnInitListener {
-            if(it==TextToSpeech.SUCCESS){
-
-                val defaultLocale = Locale.getDefault()
-                    tts.setLanguage(defaultLocale)
-                tts.setSpeechRate(1.0f)
-                tts.speak(message, TextToSpeech.QUEUE_ADD, null, null)
-            }
-        })
+        if (!::tts.isInitialized) {  // Inisialisasi tts hanya jika belum ada
+            tts = TextToSpeech(requireContext(), TextToSpeech.OnInitListener {
+                if (it == TextToSpeech.SUCCESS) {
+                    val defaultLocale = Locale.getDefault()
+                    tts.language = defaultLocale
+                    tts.setSpeechRate(1.0f)
+                    tts.speak(message, TextToSpeech.QUEUE_ADD, null, null)
+                }
+            })
+        } else {
+            tts.speak(message, TextToSpeech.QUEUE_ADD, null, null)
+        }
     }
 
     private fun startAction() {
         binding.viewFinder.setOnClickListener {
-            if( onProcess==false){
-
+            if (!onProcess) {
                 shutterOn()
-            }else{
+            } else {
                 tspeech("Sedang Melakukan Scan, Harap tunggu")
             }
         }
     }
 
-private lateinit var imageCapture:ImageCapture
-
     private fun shutterOn() {
-        val imageCapture = imageCapture ?: return
+        val imgName = "IMG_${System.currentTimeMillis()}.jpg"
         val photoFile = File(
             requireContext().getExternalFilesDir(null),
-            "IMG_${System.currentTimeMillis()}.jpg"
+            imgName
         )
 
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
@@ -169,41 +166,38 @@ private lateinit var imageCapture:ImageCapture
             ContextCompat.getMainExecutor(requireContext()),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
-
+                    Log.e(TAG, "Image capture failed: ${exc.message}")
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    duce(photoFile).also {
-                       viewModel.uploadImage(it)
-                    }
-
-
+                    val p = reduceIMage(photoFile)
+                    setPhotoFile(p)
+                    viewModel.uploadImage(requireContext(), p)
                 }
             }
         )
     }
 
-
+    private fun setPhotoFile(p: File) {
+        photoFile = p
+    }
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener({
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
-            // Inisialisasi Preview
             val preview = Preview.Builder()
                 .build()
                 .also {
                     it.surfaceProvider = binding.viewFinder.surfaceProvider
                 }
 
-            // Inisialisasi ImageCapture
             imageCapture = ImageCapture.Builder()
                 .setTargetRotation(binding.viewFinder.display.rotation)
                 .build()
 
             try {
-                // Unbind semua sebelumnya dan bind ke lifecycle fragment
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(
                     this,
@@ -218,7 +212,7 @@ private lateinit var imageCapture:ImageCapture
         }, ContextCompat.getMainExecutor(requireContext()))
     }
 
-    private fun playAnimation(){
+    private fun playAnimation() {
         val appBar = ObjectAnimator.ofFloat(binding.appBarLayout, View.ALPHA, 1F).setDuration(400)
         AnimatorSet().apply {
             playSequentially(appBar)
@@ -235,6 +229,7 @@ private lateinit var imageCapture:ImageCapture
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+
     }
 
     companion object {

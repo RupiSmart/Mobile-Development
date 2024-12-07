@@ -32,7 +32,7 @@ class SettingActivity : AppCompatActivity() {
         setupAction()
 
         binding.mainAppBar.setNavigationOnClickListener { onBackPressed() }
-        binding.ivLangSetting.setOnClickListener{
+        binding.changeLanguageIcon.setOnClickListener{
             startActivity(Intent(Settings.ACTION_LOCALE_SETTINGS))
         }
         viewModel.darkMode.observe(this) { isDarkMode ->

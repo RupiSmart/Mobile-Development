@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.devtools.ksp")
-
+    id("kotlin-parcelize")
 }
 
 android {
@@ -17,7 +17,7 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", "\"http://34.142.216.120:8000/api/\"")
+        buildConfigField("String", "BASE_URL", "\"http://34.87.113.182:8000/api/\"")
     }
 
     buildTypes {

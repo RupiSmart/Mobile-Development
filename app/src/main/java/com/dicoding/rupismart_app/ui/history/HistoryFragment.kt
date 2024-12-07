@@ -46,14 +46,19 @@ class HistoryFragment : Fragment() {
         val adapter = historyAdapter()
         viewModel.getAllHistory.observe(viewLifecycleOwner){result->
             when(result){
-                is Result.Loading -> {}
+                is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
                 is Result.Error -> {
+                    binding.progressBar.visibility = View.GONE
+
                     Toast.makeText(requireActivity(), result.error, Toast.LENGTH_SHORT).show()
                 }
                 is Result.Success -> {
-                    adapter.submitList(result.data.history).apply {
-                        binding.rvHistory.setHasFixedSize(true)
+                    binding.progressBar.visibility = View.GONE
+                    adapter.submitList(result.data).apply {
                         binding.rvHistory.layoutManager = LinearLayoutManager(requireContext())
+                        binding.rvHistory.setHasFixedSize(false)
                         binding.rvHistory.adapter = adapter
                     }
                 }
