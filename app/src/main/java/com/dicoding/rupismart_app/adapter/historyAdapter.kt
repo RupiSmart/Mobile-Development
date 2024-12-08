@@ -38,7 +38,7 @@ class historyAdapter: ListAdapter<HistoryEntity, historyAdapter.MyViewHolder>(hi
 
             binding.tvItem.text = if(history.isKoin) context.getString(R.string.not_coin) else context.getString(R.string.coin)
             binding.tvNominal.text = history.nominal.toString()
-            binding.tvDateTime.text = history.timestamp.formatTimestamp()
+            binding.tvDateTime.text = history.timestamp.formatTimestamp(context)
             val tvDesc = binding.tvItem
             tvDesc.paintFlags = tvDesc.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         }

@@ -13,4 +13,13 @@
     <string name="not_coin">Uang Kertas</string>
     <string name="coin">Uang Koin</string>
     <string name="todo">todo</string>
+    <string name="permission_request_denied">Perijinan Ditolak</string>
+    <string name="fail_to_upload_scan">Gagal Mengambil data, Coba lagi</string>
+    <string name="fail_to_get_img">Gagal Mengambil Gambar</string>
+    <string name="on_process">Sedang Melakukan Scan, Harap tunggu</string>
+    <string name="show_camera_failed">Gagal Memunculkan Kamera</string>
+    <string name="just_now">baru saja</string>
+    <string name="min_ago">%1$s menit yang lalu</string>
+    <string name="hour_ago">%1$s jam yang lalu</string>
+    <string name="yesterday">kemarin</string>
 </resources>

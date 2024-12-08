@@ -1,9 +1,11 @@
 package com.dicoding.rupismart_app.utils
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.text.format.DateUtils
 import androidx.appcompat.app.AppCompatDelegate
+import com.dicoding.rupismart_app.R
 import com.google.android.material.switchmaterial.SwitchMaterial
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -21,7 +23,7 @@ fun ThemeisDark(isDarkModeActive: Boolean, switchTheme: SwitchMaterial? = null) 
         switchTheme?.isChecked = false
     }
 }
-fun String.formatTimestamp(): String {
+fun String.formatTimestamp(context: Context): String {
     val timestamp = this.toLong()
     val currentTime = System.currentTimeMillis()
 
@@ -31,18 +33,18 @@ fun String.formatTimestamp(): String {
 
     return when {
         timeDiff < DateUtils.MINUTE_IN_MILLIS -> {
-            if (locale.language == "id") "baru saja" else "just now"
+          context.getString(R.string.just_now)
         }
         timeDiff < DateUtils.HOUR_IN_MILLIS -> {
             val minutes = timeDiff / DateUtils.MINUTE_IN_MILLIS
-            if (locale.language == "id") "$minutes menit yang lalu" else "$minutes minutes ago"
+           context .getString(R.string.min_ago, minutes.toString())
         }
         timeDiff < DateUtils.DAY_IN_MILLIS -> {
             val hours = timeDiff / DateUtils.HOUR_IN_MILLIS
-            if (locale.language == "id") "$hours jam yang lalu" else "$hours hours ago"
+            context.getString(R.string.hour_ago, hours.toString())
         }
         timeDiff < DateUtils.DAY_IN_MILLIS * 2 -> {
-            if (locale.language == "id") "kemarin" else "yesterday"
+             context.getString(R.string.yesterday)
         }
         else -> {
             val sdf = SimpleDateFormat("d MMMM yyyy", locale)
