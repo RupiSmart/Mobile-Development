@@ -5,6 +5,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.SoundPool
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
@@ -42,7 +43,9 @@ class ScanFragment : Fragment() {
     private var _binding: FragmentScanBinding? = null
     private val binding get() = _binding!!
     private lateinit var photoFile: File
-
+    private lateinit var sp: SoundPool
+    private var soundId: Int = 0
+    private var spLoaded = false
     private var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private lateinit var imageCapture: ImageCapture
 
@@ -53,7 +56,8 @@ class ScanFragment : Fragment() {
             if (isGranted) {
                 startCamera()
             } else {
-                Toast.makeText(requireContext(), "Permission request denied", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(),
+                    getString(R.string.permission_request_denied), Toast.LENGTH_LONG).show()
             }
         }
 
@@ -81,7 +85,17 @@ class ScanFragment : Fragment() {
         if (!allPermissionGranted()) {
             requestPermissionLauncher.launch(REQUIRED_PERMISSION)
         }
-
+        sp = SoundPool.Builder()
+            .setMaxStreams(10)
+            .build()
+        sp.setOnLoadCompleteListener { _, _, status ->
+            if (status == 0) {
+                spLoaded = true
+            } else {
+                Toast.makeText(requireContext(), "Gagal load", Toast.LENGTH_SHORT).show()
+            }
+        }
+        soundId = sp.load(requireContext(), R.raw.click, 1)
         binding.mainAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.setting -> {
@@ -114,9 +128,10 @@ class ScanFragment : Fragment() {
                 is Result.Error -> {
                     photoFile?.delete()
                     onProcess = false
-                    tspeech("Gagal Mengambil data, Coba lagi")
+                    tspeech(getString(R.string.fail_to_upload_scan))
                     binding.progressIndicator.visibility = View.GONE
-                    Toast.makeText(requireContext(), "Gagal Mengambil Gambar", Toast.LENGTH_SHORT)
+                    Toast.makeText(requireContext(),
+                        getString(R.string.fail_to_get_img), Toast.LENGTH_SHORT)
                         .show()
                 }
                 is Result.Loading -> {
@@ -144,10 +159,15 @@ class ScanFragment : Fragment() {
 
     private fun startAction() {
         binding.viewFinder.setOnClickListener {
+
+            if (spLoaded) {
+                sp.play(soundId, 1f, 1f, 0, 0, 1f)
+            }
             if (!onProcess) {
                 shutterOn()
+
             } else {
-                tspeech("Sedang Melakukan Scan, Harap tunggu")
+                tspeech(getString(R.string.on_process))
             }
         }
     }
@@ -206,7 +226,8 @@ class ScanFragment : Fragment() {
                     imageCapture
                 )
             } catch (exc: Exception) {
-                Toast.makeText(requireContext(), "Gagal Memunculkan Kamera", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(),
+                    getString(R.string.show_camera_failed), Toast.LENGTH_SHORT).show()
                 Log.e(TAG, "startCamera: ${exc.message}")
             }
         }, ContextCompat.getMainExecutor(requireContext()))
