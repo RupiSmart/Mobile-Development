@@ -35,6 +35,9 @@ class SettingActivity : AppCompatActivity() {
         binding.changeLanguageIcon.setOnClickListener{
             startActivity(Intent(Settings.ACTION_LOCALE_SETTINGS))
         }
+        binding.talkbackActive.setOnClickListener{
+            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+        }
         viewModel.darkMode.observe(this) { isDarkMode ->
             ThemeisDark(isDarkMode)
             binding.swithMode.isChecked = isDarkMode

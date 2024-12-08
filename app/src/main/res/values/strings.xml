@@ -9,7 +9,7 @@
     <string name="click_to_change_lang">click to change language</string>
     <string name="pref_title">Preferences</string>
     <string name="dark_mode_pref">Dark Mode</string>
-    <string name="text_to_speech">Text-to-Speech</string>
+    <string name="talkback">Talkback</string>
     <string name="not_coin">Uang Kertas</string>
     <string name="coin">Uang Koin</string>
     <string name="todo">todo</string>
@@ -22,4 +22,6 @@
     <string name="min_ago">%1$s menit yang lalu</string>
     <string name="hour_ago">%1$s jam yang lalu</string>
     <string name="yesterday">kemarin</string>
+    <string name="click_one">Click satu Kali untuk Scan Uang</string>
+    <string name="verified">TERVERIFIKASI</string>
 </resources>

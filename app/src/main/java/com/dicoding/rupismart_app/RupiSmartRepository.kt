@@ -33,6 +33,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.ByteArrayOutputStream
 import com.dicoding.rupismart_app.data.Result
+import com.dicoding.rupismart_app.data.remote.response.PredictionTime
+import com.dicoding.rupismart_app.utils.timestampResult
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 
 class RupiSmartRepository private constructor(
     private val apiService: ApiService,
@@ -49,7 +54,6 @@ class RupiSmartRepository private constructor(
     }
     @SuppressLint("SuspiciousIndentation")
     fun getAllHistory(): LiveData<Result<List<HistoryEntity>>> = liveData {
-        emit(Result.Loading)
         emit(Result.Loading)
         val localData: LiveData<Result<List<HistoryEntity>>> = dao.getAllHistory().map { Result.Success(it) }
         emitSource(localData)
@@ -86,11 +90,11 @@ class RupiSmartRepository private constructor(
             val analysisEntity = HistoryEntity(
                 id = 0,
                 nominal = response.result.nominal,
-                isKoin = response.result.isKoin,
+                type = response.result.type,
                 confidence = "",
-                label = response.result.nominal,
+                label = response.result.nominalText,
                 img = imageString,
-                timestamp = System.currentTimeMillis().toString()
+                timestamp = timestampResult(response.result.predictionTime)
             )
             dao.insertHistory(analysisEntity)
             emit(Result.Success(response))
@@ -102,6 +106,8 @@ class RupiSmartRepository private constructor(
             emit(Result.Error(e.message.toString()))
         }
     }
+
+
 
     private fun getImageUriFromFile(context: Context, imageFile: File): Uri {
         return Uri.fromFile(imageFile)

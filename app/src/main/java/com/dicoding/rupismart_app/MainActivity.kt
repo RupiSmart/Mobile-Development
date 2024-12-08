@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_history, R.id.navigation_camera, R.id.navigation_help
             )
         )
+        
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }
