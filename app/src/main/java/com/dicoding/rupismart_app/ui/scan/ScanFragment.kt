@@ -86,6 +86,7 @@ class ScanFragment : Fragment() {
             requestPermissionLauncher.launch(REQUIRED_PERMISSION)
         }
 
+        SoundPoolPlayer.initialize(requireContext(),listOf(R.raw.click,R.raw.popup))
         binding.mainAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.setting -> {
@@ -106,7 +107,7 @@ class ScanFragment : Fragment() {
                     val nominalNumber = result.data.result.nominal
                     val nominalText = result.data.result.nominalText
                     binding.progressIndicator.visibility = View.GONE
-                    lifecycleScope.launch {
+                    viewLifecycleOwner.lifecycleScope.launch {
                         binding.notificationResult.visibility = View.VISIBLE
                         binding.nominalNumber.text = nominalNumber
                         binding.nominalText.text=nominalText
