@@ -24,21 +24,15 @@ data class PredictionTime(
 
 data class Result(
 
-	@field:SerializedName("nominal")
-	val nominal: String,
-
 	@field:SerializedName("image_url")
 	val imageUrl: String,
+
+	@field:SerializedName("authenticity")
+	val authenticity: String,
 
 	@field:SerializedName("confidence")
 	val confidence: Any,
 
 	@field:SerializedName("prediction_time")
-	val predictionTime: PredictionTime,
-
-	@field:SerializedName("type")
-	val type: String,
-
-	@field:SerializedName("nominal_text")
-	val nominalText: String
+	val predictionTime: PredictionTime
 )

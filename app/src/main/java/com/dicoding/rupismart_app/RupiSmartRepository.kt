@@ -89,10 +89,10 @@ class RupiSmartRepository private constructor(
             val imageString = compressAndConvertImageToBase64(context,imageUri)
             val analysisEntity = HistoryEntity(
                 id = 0,
-                nominal = response.result.nominal,
-                type = response.result.type,
+                nominal = "",
+                type = "Uang",
                 confidence = "",
-                label = response.result.nominalText,
+                label = "",
                 img = imageString,
                 timestamp = timestampResult(response.result.predictionTime)
             )

@@ -100,7 +100,7 @@ class ScanFragment : Fragment() {
         startAction()
         startCamera()
 
-        viewModel.uploadResult.observe(viewLifecycleOwner) { result ->
+        /*viewModel.uploadResult.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Result.Success -> {
                     photoFile.delete()
@@ -123,6 +123,7 @@ class ScanFragment : Fragment() {
                     photoFile.delete()
                     onProcess = false
                     tspeech(getString(R.string.fail_to_upload_scan))
+                    tspeech(result.error)
                     binding.progressIndicator.visibility = View.GONE
                     Toast.makeText(requireContext(),
                         getString(R.string.fail_to_get_img), Toast.LENGTH_SHORT)
@@ -133,7 +134,7 @@ class ScanFragment : Fragment() {
                     binding.progressIndicator.visibility = View.VISIBLE
                 }
             }
-        }
+        }*/
     }
 
 
@@ -187,7 +188,38 @@ class ScanFragment : Fragment() {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val p = reduceIMage(photoFile)
                     setPhotoFile(p)
-                    viewModel.uploadImage(requireContext(), p)
+                    viewModel.upload(requireContext(), p).observe(viewLifecycleOwner){result->
+                        when (result) {
+                            is Result.Success -> {
+                                photoFile.delete()
+                                binding.progressIndicator.visibility = View.GONE
+                                viewLifecycleOwner.lifecycleScope.launch {
+                                    binding.notificationResult.visibility = View.VISIBLE
+                                    binding.nominalNumber.text = result.data.result.authenticity
+                                    SoundPoolPlayer.playSound(R.raw.popup)
+                                    tspeech("Uang"+result.data.result.authenticity)
+                                    delay(2000)
+                                    binding.notificationResult.visibility = View.GONE
+                                    onProcess = false
+                                }
+                            }
+
+                            is Result.Error -> {
+                                photoFile.delete()
+                                onProcess = false
+                                tspeech(getString(R.string.fail_to_upload_scan))
+                                tspeech(result.error)
+                                binding.progressIndicator.visibility = View.GONE
+                                Toast.makeText(requireContext(),
+                                    getString(R.string.fail_to_get_img), Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                            is Result.Loading -> {
+                                onProcess = true
+                                binding.progressIndicator.visibility = View.VISIBLE
+                            }
+                        }
+                    }
                 }
             }
         )
