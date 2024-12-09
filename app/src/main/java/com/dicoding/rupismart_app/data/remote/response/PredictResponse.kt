@@ -10,21 +10,35 @@ data class PredictResponse(
 	@field:SerializedName("success")
 	val success: Boolean
 )
+data class PredictionTime(
+
+	@field:SerializedName("date")
+	val date: String,
+
+	@field:SerializedName("timezone")
+	val timezone: String,
+
+	@field:SerializedName("time")
+	val time: String
+)
 
 data class Result(
 
 	@field:SerializedName("nominal")
 	val nominal: String,
 
-	@field:SerializedName("isKoin")
-	val isKoin: Boolean,
+	@field:SerializedName("image_url")
+	val imageUrl: String,
 
-	@field:SerializedName("auth_confidence")
-	val authConfidence: Any,
+	@field:SerializedName("confidence")
+	val confidence: Any,
 
-	@field:SerializedName("authenticity")
-	val authenticity: String,
+	@field:SerializedName("prediction_time")
+	val predictionTime: PredictionTime,
 
-	@field:SerializedName("nominal_confidence")
-	val nominalConfidence: Any
+	@field:SerializedName("type")
+	val type: String,
+
+	@field:SerializedName("nominal_text")
+	val nominalText: String
 )

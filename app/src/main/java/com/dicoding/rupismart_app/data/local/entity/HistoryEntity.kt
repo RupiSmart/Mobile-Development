@@ -17,8 +17,8 @@ data class HistoryEntity(
     @ColumnInfo(name = "nominal")
     val nominal: String,
 
-    @ColumnInfo(name = "isKoin")
-    val isKoin: Boolean,
+    @ColumnInfo(name = "type")
+    val type: String,
 
     @ColumnInfo(name = "confidence")
     val confidence: String,

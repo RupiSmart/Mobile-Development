@@ -29,6 +29,7 @@ import com.dicoding.rupismart_app.ViewModelFactory
 import com.dicoding.rupismart_app.data.Result
 import com.dicoding.rupismart_app.databinding.FragmentScanBinding
 import com.dicoding.rupismart_app.ui.setting.SettingActivity
+import com.dicoding.rupismart_app.utils.SoundPoolPlayer
 import com.dicoding.rupismart_app.utils.reduceIMage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -43,8 +44,7 @@ class ScanFragment : Fragment() {
     private var _binding: FragmentScanBinding? = null
     private val binding get() = _binding!!
     private lateinit var photoFile: File
-    private lateinit var sp: SoundPool
-    private var soundId: Int = 0
+
     private var spLoaded = false
     private var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private lateinit var imageCapture: ImageCapture
@@ -85,17 +85,8 @@ class ScanFragment : Fragment() {
         if (!allPermissionGranted()) {
             requestPermissionLauncher.launch(REQUIRED_PERMISSION)
         }
-        sp = SoundPool.Builder()
-            .setMaxStreams(10)
-            .build()
-        sp.setOnLoadCompleteListener { _, _, status ->
-            if (status == 0) {
-                spLoaded = true
-            } else {
-                Toast.makeText(requireContext(), "Gagal load", Toast.LENGTH_SHORT).show()
-            }
-        }
-        soundId = sp.load(requireContext(), R.raw.click, 1)
+
+        SoundPoolPlayer.initialize(requireContext(),listOf(R.raw.click,R.raw.popup))
         binding.mainAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.setting -> {
@@ -112,13 +103,16 @@ class ScanFragment : Fragment() {
         viewModel.uploadResult.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Result.Success -> {
-                    photoFile?.delete()
-                    val nominal = result.data.result.nominal
+                    photoFile.delete()
+                    val nominalNumber = result.data.result.nominal
+                    val nominalText = result.data.result.nominalText
                     binding.progressIndicator.visibility = View.GONE
-                    lifecycleScope.launch {
+                    viewLifecycleOwner.lifecycleScope.launch {
                         binding.notificationResult.visibility = View.VISIBLE
-                        binding.nominalText.text = nominal
-                        tspeech(nominal)
+                        binding.nominalNumber.text = nominalNumber
+                        binding.nominalText.text=nominalText
+                        SoundPoolPlayer.playSound(R.raw.popup)
+                        tspeech(nominalText)
                         delay(2000)
                         binding.notificationResult.visibility = View.GONE
                         onProcess = false
@@ -126,7 +120,7 @@ class ScanFragment : Fragment() {
                 }
 
                 is Result.Error -> {
-                    photoFile?.delete()
+                    photoFile.delete()
                     onProcess = false
                     tspeech(getString(R.string.fail_to_upload_scan))
                     binding.progressIndicator.visibility = View.GONE
@@ -142,8 +136,9 @@ class ScanFragment : Fragment() {
         }
     }
 
+
     private fun tspeech(message: String) {
-        if (!::tts.isInitialized) {  // Inisialisasi tts hanya jika belum ada
+        if (!::tts.isInitialized) {
             tts = TextToSpeech(requireContext(), TextToSpeech.OnInitListener {
                 if (it == TextToSpeech.SUCCESS) {
                     val defaultLocale = Locale.getDefault()
@@ -158,11 +153,11 @@ class ScanFragment : Fragment() {
     }
 
     private fun startAction() {
+
+
         binding.viewFinder.setOnClickListener {
 
-            if (spLoaded) {
-                sp.play(soundId, 1f, 1f, 0, 0, 1f)
-            }
+            SoundPoolPlayer.playSound(R.raw.click)
             if (!onProcess) {
                 shutterOn()
 
@@ -250,7 +245,7 @@ class ScanFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-
+        SoundPoolPlayer.release()
     }
 
     companion object {

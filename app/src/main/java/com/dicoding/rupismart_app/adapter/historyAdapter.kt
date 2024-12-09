@@ -33,10 +33,7 @@ class historyAdapter: ListAdapter<HistoryEntity, historyAdapter.MyViewHolder>(hi
     class MyViewHolder(private val binding: ItemHistoryBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(history: HistoryEntity){
             val context = binding.root.context
-
-
-
-            binding.tvItem.text = if(history.isKoin) context.getString(R.string.not_coin) else context.getString(R.string.coin)
+            binding.tvItem.text = history.type
             binding.tvNominal.text = history.nominal.toString()
             binding.tvDateTime.text = history.timestamp.formatTimestamp(context)
             val tvDesc = binding.tvItem
