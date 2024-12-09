@@ -3,6 +3,7 @@ package com.dicoding.rupismart_app.ui.scan
 import android.Manifest
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.SoundPool
@@ -16,9 +17,12 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
+import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -28,13 +32,18 @@ import com.dicoding.rupismart_app.R
 import com.dicoding.rupismart_app.ViewModelFactory
 import com.dicoding.rupismart_app.data.Result
 import com.dicoding.rupismart_app.databinding.FragmentScanBinding
+import com.dicoding.rupismart_app.helper.Classifications
+import com.dicoding.rupismart_app.helper.ImageClassifierHelper
 import com.dicoding.rupismart_app.ui.setting.SettingActivity
 import com.dicoding.rupismart_app.utils.SoundPoolPlayer
 import com.dicoding.rupismart_app.utils.reduceIMage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
+import java.text.NumberFormat
 import java.util.Locale
+import java.util.concurrent.Executors
+
 class ScanFragment : Fragment() {
     private val viewModel by viewModels<ScanViewModel> {
         ViewModelFactory.getInstance(requireContext())
@@ -136,6 +145,91 @@ class ScanFragment : Fragment() {
         }
     }
 
+    private lateinit var imageClassifierHelper: ImageClassifierHelper
+    private var lastClassificationTime = 0L
+    private fun startClassification() {
+//        imageClassifierHelper = ImageClassifierHelper(
+//            context = this,
+//            classifierListener = object : ImageClassifierHelper.ClassifierListener {
+//                override fun onError(error: String) {
+//                    runOnUiThread {
+//                        Toast.makeText(this@MainActivity, error, Toast.LENGTH_SHORT).show()
+//                    }
+//                }
+//
+//                @SuppressLint("SetTextI18n")
+//                override fun onResults(
+//                    results: List<Classifications>?,
+//                    inferenceTime: Long
+//                ) {
+//                    val currentTime = System.currentTimeMillis()
+//                    if (currentTime - lastClassificationTime >= 3000) {
+//                        runOnUiThread {
+//                            results?.let {
+//                                if (it.isNotEmpty()) {
+//                                    val sortedResults = it.sortedByDescending { classification -> classification.score }
+//                                    val displayResult = sortedResults.joinToString("\n") { result ->
+//                                        if(result.score < 0.85f){
+//                                            speakText("Try again later.")
+//                                            return@joinToString "Agus Sedih bangett :("
+//                                        }
+//                                        val resultText = "${result.label}: ${NumberFormat.getPercentInstance().format(result.score).trim()}"
+//                                        speakText(resultText)
+//                                        resultText
+//                                    }
+//                                    binding.percentageText.text = displayResult
+//                                    binding.hintText.text = "$inferenceTime ms"
+//                                    lastClassificationTime = currentTime
+//                                } else {
+//                                    binding.percentageText.text = "No results"
+//                                    binding.hintText.text = ""
+//                                    lastClassificationTime = currentTime
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        )
+//
+//        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+//
+//        cameraProviderFuture.addListener({
+//            val resolutionSelector = ResolutionSelector.Builder()
+//                .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
+//                .build()
+//            val imageAnalyzer = ImageAnalysis.Builder()
+//                .setResolutionSelector(resolutionSelector)
+//                .setTargetRotation(binding.viewFinder.display.rotation)
+//                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+//                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+//                .build()
+//            imageAnalyzer.setAnalyzer(Executors.newSingleThreadExecutor()) { image ->
+//                imageClassifierHelper.classifyImage(image)
+//            }
+//
+//            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+//            val preview = Preview.Builder().build().also {
+//                it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
+//            }
+//            try {
+//                cameraProvider.unbindAll()
+//                cameraProvider.bindToLifecycle(
+//                    this,
+//                    cameraSelector,
+//                    preview,
+//                    imageAnalyzer
+//                )
+//            } catch (exc: Exception) {
+//                Toast.makeText(
+//                    this@MainActivity,
+//                    "Gagal memunculkan kamera.",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//                Log.e(TAG, "startCamera: ${exc.message}")
+//            }
+//        }, ContextCompat.getMainExecutor(this))
+    }
 
     private fun tspeech(message: String) {
         if (!::tts.isInitialized) {
@@ -153,7 +247,6 @@ class ScanFragment : Fragment() {
     }
 
     private fun startAction() {
-
 
         binding.viewFinder.setOnClickListener {
 
