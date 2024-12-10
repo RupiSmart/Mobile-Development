@@ -4,15 +4,18 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.AudioAttributes
+import android.media.Image
 import android.media.SoundPool
 import android.text.format.DateUtils
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.camera.core.ImageProxy
 import com.dicoding.rupismart_app.R
 import com.dicoding.rupismart_app.data.remote.response.PredictionTime
 import com.google.android.material.switchmaterial.SwitchMaterial
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -55,6 +58,20 @@ fun String.formatTimestamp(context: Context): String {
             sdf.format(Date(timestamp))
         }
     }
+}
+fun imageProxyToBitmap(imageProxy: ImageProxy): Bitmap? {
+    val image: Image = imageProxy.image ?: return null
+    val buffer: ByteBuffer = image.planes[0].buffer
+    val bytes = ByteArray(buffer.remaining())
+    buffer.get(bytes)
+
+    // Decode byte array to bitmap
+    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+
+    // Close image proxy when done
+    imageProxy.close()
+
+    return bitmap
 }
 fun reduceIMage(file:File): File {
     val bitmap = BitmapFactory.decodeFile(file.path)

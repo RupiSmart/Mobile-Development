@@ -36,6 +36,7 @@ import com.dicoding.rupismart_app.helper.Classifications
 import com.dicoding.rupismart_app.helper.ImageClassifierHelper
 import com.dicoding.rupismart_app.ui.setting.SettingActivity
 import com.dicoding.rupismart_app.utils.SoundPoolPlayer
+import com.dicoding.rupismart_app.utils.imageProxyToBitmap
 import com.dicoding.rupismart_app.utils.reduceIMage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -43,12 +44,15 @@ import java.io.File
 import java.text.NumberFormat
 import java.util.Locale
 import java.util.concurrent.Executors
+import kotlin.math.log
 
 class ScanFragment : Fragment() {
+    private var resultSpeech:String=""
     private val viewModel by viewModels<ScanViewModel> {
         ViewModelFactory.getInstance(requireContext())
     }
     private var onProcess = false
+    private var notificationActive = false
     private lateinit var tts: TextToSpeech
     private var _binding: FragmentScanBinding? = null
     private val binding get() = _binding!!
@@ -63,7 +67,8 @@ class ScanFragment : Fragment() {
             ActivityResultContracts.RequestPermission()
         ) { isGranted ->
             if (isGranted) {
-                startCamera()
+//                startCamera()
+                startClassification()
             } else {
                 Toast.makeText(requireContext(),
                     getString(R.string.permission_request_denied), Toast.LENGTH_LONG).show()
@@ -105,131 +110,106 @@ class ScanFragment : Fragment() {
                 else -> false
             }
         }
-
+        startClassification()
         startAction()
-        startCamera()
+//        startCamera()
 
-        /*viewModel.uploadResult.observe(viewLifecycleOwner) { result ->
-            when (result) {
-                is Result.Success -> {
-                    photoFile.delete()
-                    val nominalNumber = result.data.result.nominal
-                    val nominalText = result.data.result.nominalText
-                    binding.progressIndicator.visibility = View.GONE
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        binding.notificationResult.visibility = View.VISIBLE
-                        binding.nominalNumber.text = nominalNumber
-                        binding.nominalText.text=nominalText
-                        SoundPoolPlayer.playSound(R.raw.popup)
-                        tspeech(nominalText)
-                        delay(2000)
-                        binding.notificationResult.visibility = View.GONE
-                        onProcess = false
-                    }
-                }
-
-                is Result.Error -> {
-                    photoFile.delete()
-                    onProcess = false
-                    tspeech(getString(R.string.fail_to_upload_scan))
-                    tspeech(result.error)
-                    binding.progressIndicator.visibility = View.GONE
-                    Toast.makeText(requireContext(),
-                        getString(R.string.fail_to_get_img), Toast.LENGTH_SHORT)
-                        .show()
-                }
-                is Result.Loading -> {
-                    onProcess = true
-                    binding.progressIndicator.visibility = View.VISIBLE
-                }
-            }
-        }*/
-    }
-
+   }
+//clasification
     private lateinit var imageClassifierHelper: ImageClassifierHelper
     private var lastClassificationTime = 0L
     private fun startClassification() {
-//        imageClassifierHelper = ImageClassifierHelper(
-//            context = this,
-//            classifierListener = object : ImageClassifierHelper.ClassifierListener {
-//                override fun onError(error: String) {
-//                    runOnUiThread {
-//                        Toast.makeText(this@MainActivity, error, Toast.LENGTH_SHORT).show()
-//                    }
-//                }
-//
-//                @SuppressLint("SetTextI18n")
-//                override fun onResults(
-//                    results: List<Classifications>?,
-//                    inferenceTime: Long
-//                ) {
-//                    val currentTime = System.currentTimeMillis()
-//                    if (currentTime - lastClassificationTime >= 3000) {
-//                        runOnUiThread {
-//                            results?.let {
-//                                if (it.isNotEmpty()) {
-//                                    val sortedResults = it.sortedByDescending { classification -> classification.score }
-//                                    val displayResult = sortedResults.joinToString("\n") { result ->
-//                                        if(result.score < 0.85f){
-//                                            speakText("Try again later.")
-//                                            return@joinToString "Agus Sedih bangett :("
-//                                        }
-//                                        val resultText = "${result.label}: ${NumberFormat.getPercentInstance().format(result.score).trim()}"
-//                                        speakText(resultText)
-//                                        resultText
-//                                    }
-//                                    binding.percentageText.text = displayResult
-//                                    binding.hintText.text = "$inferenceTime ms"
-//                                    lastClassificationTime = currentTime
-//                                } else {
-//                                    binding.percentageText.text = "No results"
-//                                    binding.hintText.text = ""
-//                                    lastClassificationTime = currentTime
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        )
-//
-//        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-//
-//        cameraProviderFuture.addListener({
-//            val resolutionSelector = ResolutionSelector.Builder()
-//                .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
-//                .build()
-//            val imageAnalyzer = ImageAnalysis.Builder()
-//                .setResolutionSelector(resolutionSelector)
-//                .setTargetRotation(binding.viewFinder.display.rotation)
-//                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-//                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
-//                .build()
-//            imageAnalyzer.setAnalyzer(Executors.newSingleThreadExecutor()) { image ->
-//                imageClassifierHelper.classifyImage(image)
-//            }
-//
-//            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-//            val preview = Preview.Builder().build().also {
-//                it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
-//            }
-//            try {
-//                cameraProvider.unbindAll()
-//                cameraProvider.bindToLifecycle(
-//                    this,
-//                    cameraSelector,
-//                    preview,
-//                    imageAnalyzer
-//                )
-//            } catch (exc: Exception) {
-//                Toast.makeText(
-//                    this@MainActivity,
-//                    "Gagal memunculkan kamera.",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//                Log.e(TAG, "startCamera: ${exc.message}")
-//            }
-//        }, ContextCompat.getMainExecutor(this))
+        imageClassifierHelper = ImageClassifierHelper(
+            context = requireContext(),
+            classifierListener = object : ImageClassifierHelper.ClassifierListener {
+                override fun onError(error: String) {
+                    activity?.runOnUiThread {
+                        Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                @SuppressLint("SetTextI18n")
+                override fun onResults(
+                    results: List<Classifications>?,
+                    inferenceTime: Long
+                ) {
+                    activity?.runOnUiThread {
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastClassificationTime >= 4000) {
+                            results?.let {
+                                if (it.isNotEmpty()) {
+                                    val sortedResults = it.sortedByDescending { classification -> classification.score }
+                                    val displayResult = sortedResults.joinToString("\n") { result ->
+                                        if(result.score < .85f){
+                                            resultSpeech="sedih"
+                                            return@joinToString "Agus Sedih bangett :("
+                                        }
+
+                                         val resultText = "${result.label}: ${NumberFormat.getPercentInstance().format(result.score).trim()}"
+                                            resultSpeech = result.label + "Rupiah"
+
+                                              resultText
+                                    }
+
+
+                                    lastClassificationTime = currentTime
+                                } else {
+                                    lastClassificationTime = currentTime
+                                }
+                                viewLifecycleOwner.lifecycleScope.launch {
+                                    binding.notificationResult.visibility = View.VISIBLE
+                                    binding.nominalNumber.text = resultSpeech
+                                    SoundPoolPlayer.playSound(R.raw.popup)
+                                    tspeech(resultSpeech)
+                                    delay(1000)
+                                    binding.notificationResult.visibility = View.GONE
+                                }
+
+                            }
+                    }
+                }
+                }
+            }
+        )
+
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
+
+        cameraProviderFuture.addListener({
+            val resolutionSelector = ResolutionSelector.Builder()
+                .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
+                .build()
+            val imageAnalyzer = ImageAnalysis.Builder()
+                .setResolutionSelector(resolutionSelector)
+                .setTargetRotation(binding.viewFinder.display.rotation)
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+                .build()
+            imageAnalyzer.setAnalyzer(Executors.newSingleThreadExecutor()) { image ->
+                imageClassifierHelper.classifyImage(image)
+
+            }
+
+            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+            val preview = Preview.Builder().build().also {
+                it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
+            }
+            try {
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(
+                    this,
+                    cameraSelector,
+                    preview,
+                    imageAnalyzer
+                )
+            } catch (exc: Exception) {
+                Toast.makeText(
+                    requireContext(),
+                    "Gagal memunculkan kamera.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                Log.e(TAG, "startCamera: ${exc.message}")
+            }
+        }, ContextCompat.getMainExecutor(requireContext()))
     }
 
     private fun tspeech(message: String) {
@@ -251,13 +231,13 @@ class ScanFragment : Fragment() {
 
         binding.viewFinder.setOnClickListener {
 
-            SoundPoolPlayer.playSound(R.raw.click)
-            if (!onProcess) {
-                shutterOn()
-
-            } else {
-                tspeech(getString(R.string.on_process))
-            }
+//            SoundPoolPlayer.playSound(R.raw.click)
+//            if (!onProcess) {
+////                shutterOn()
+//
+//            } else {
+//                tspeech(getString(R.string.on_process))
+//            }
         }
     }
 
@@ -364,7 +344,8 @@ class ScanFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        startCamera()
+//        startCamera()
+//        startClassification()
     }
 
     override fun onDestroyView() {

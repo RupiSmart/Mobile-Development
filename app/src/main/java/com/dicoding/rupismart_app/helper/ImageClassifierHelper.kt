@@ -5,8 +5,7 @@ import android.graphics.Bitmap
 import android.os.SystemClock
 import android.util.Log
 import androidx.camera.core.ImageProxy
-import com.dicoding.rupismart_app.ml.Model
-import com.dicoding.rupismart_app.helper.*
+import com.dicoding.rupismart_app.ml.Rupismart
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
@@ -18,7 +17,7 @@ class ImageClassifierHelper(
     val context: Context,
     private val classifierListener: ClassifierListener?
 ) {
-    private var model: Model? = null
+    private var model: Rupismart? = null
 
     init {
         setupModel()
@@ -26,7 +25,7 @@ class ImageClassifierHelper(
 
     private fun setupModel() {
         try {
-            model = Model.newInstance(context)
+            model = Rupismart.newInstance(context)
         } catch (e: Exception) {
             classifierListener?.onError("Failed to load model: ${e.message}")
             Log.e(TAG, e.message.toString())
@@ -65,16 +64,16 @@ class ImageClassifierHelper(
         val labels = listOf(
             "100",
             "500",
-            "100k",
-            "10k",
-            "1k",
-            "2k",
-            "20k",
-            "2k",
-            "20k",
-            "50k",
-            "5k",
-            "75k"
+            "Seratus Ribu",
+            "Sepuluh Ribu",
+            "Seribu ",
+            "test 2kk",
+            "test 20k",
+            "Dua Ribu",
+            "Dua Puluh RIbu",
+            "Lima Puluh Ribu",
+            "Lima RIbu",
+            "Tujuh Puluh Lima Ribu"
         )
         val scores = output.floatArray
 
