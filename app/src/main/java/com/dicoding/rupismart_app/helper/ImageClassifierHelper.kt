@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.os.SystemClock
 import android.util.Log
 import androidx.camera.core.ImageProxy
+import com.dicoding.rupismart_app.R
 import com.dicoding.rupismart_app.ml.Rupismart
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.image.ImageProcessor
@@ -18,6 +19,7 @@ class ImageClassifierHelper(
     private val classifierListener: ClassifierListener?
 ) {
     private var model: Rupismart? = null
+    private var isAnalyzing = true
 
     init {
         setupModel()
@@ -33,6 +35,10 @@ class ImageClassifierHelper(
     }
 
     fun classifyImage(image: ImageProxy) {
+        if (!isAnalyzing) {
+            return
+        }
+
         if (model == null) {
             setupModel()
         }
@@ -62,18 +68,18 @@ class ImageClassifierHelper(
     private fun parseResults(output: TensorBuffer?, threshold: Float): Classifications? {
         if (output == null) return null
         val labels = listOf(
-            "100",
-            "500",
-            "Seratus Ribu",
-            "Sepuluh Ribu",
-            "Seribu ",
-            "test 2kk",
-            "test 20k",
-            "Dua Ribu",
-            "Dua Puluh RIbu",
-            "Lima Puluh Ribu",
-            "Lima RIbu",
-            "Tujuh Puluh Lima Ribu"
+            context.getString(R.string.hundred),
+            context.getString(R.string.five_hundred),
+            context.getString(R.string.one_hundred_thousand),
+            context.getString(R.string.ten_thousand),
+            context.getString(R.string.thousand),
+            context.getString(R.string.two_hudred),
+            context.getString(R.string.thousand),
+            context.getString(R.string.two_thousand),
+            context.getString(R.string.twenty_thousand),
+            context.getString(R.string.fivety_thousand),
+            context.getString(R.string.five_thousand),
+            context.getString(R.string.seventy_five_thousand)
         )
         val scores = output.floatArray
 
@@ -81,13 +87,12 @@ class ImageClassifierHelper(
         val maxScore = scores[maxIndex]
 
         return if (maxScore >= threshold && maxIndex < labels.size) {
-            Classifications(labels[maxIndex], maxScore)
+            Classifications(labels[maxIndex], maxScore,maxIndex)
         } else {
             null
         }
     }
-
-    private fun toBitmap(image: ImageProxy): Bitmap {
+            private fun toBitmap(image: ImageProxy): Bitmap {
         val bitmapBuffer = Bitmap.createBitmap(
             image.width,
             image.height,
@@ -98,6 +103,12 @@ class ImageClassifierHelper(
         return bitmapBuffer
     }
 
+    // Add a method to stop analyzing
+    fun stopAnalyzing() {
+        isAnalyzing = false
+    }
+
+    // Interface to handle results and errors
     interface ClassifierListener {
         fun onError(error: String)
         fun onResults(

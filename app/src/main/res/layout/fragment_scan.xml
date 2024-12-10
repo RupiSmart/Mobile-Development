@@ -17,15 +17,15 @@
         android:alpha="0"
         tools:alpha="100">
 
+
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/mainAppBar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:menu="@menu/setting_menu"
+            app:menu="@menu/switch_menu"
             app:navigationIcon="@drawable/logo"
             app:title="@string/title_camera" />
     </com.google.android.material.appbar.AppBarLayout>
-
     <androidx.camera.view.PreviewView
         android:contentDescription="@string/click_one"
         android:id="@+id/viewFinder"
@@ -33,6 +33,16 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+
+    <androidx.camera.view.PreviewView
+        android:visibility="gone"
+        android:contentDescription="@string/click_one"
+        android:id="@+id/viewFinder2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+
 
     <View
         android:id="@+id/previewArea"
@@ -49,8 +59,8 @@
 
     <ImageView
         android:id="@+id/left_icon"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:src="@drawable/scanner"
         app:layout_constraintTop_toTopOf="@id/previewArea"
         app:layout_constraintLeft_toLeftOf="@id/previewArea"
@@ -73,7 +83,7 @@
         app:layout_constraintBottom_toBottomOf="@id/previewArea"
         app:layout_constraintLeft_toLeftOf="@id/previewArea"
         tools:ignore="ContentDescription,VisualLintBounds" />
-    
+
     <ImageView
         android:layout_width="70dp"
         android:layout_height="70dp"

@@ -17,7 +17,7 @@ fun getAllHistory(): LiveData<List<HistoryEntity>>
 suspend fun getLatestHistory(): HistoryEntity?
 
 @Insert(onConflict = OnConflictStrategy.IGNORE)
-suspend fun insertHistory(history: HistoryEntity)
+ fun insertHistory(history: HistoryEntity)
 
 @Query("DELETE FROM history WHERE id = :id")
 suspend fun deleteAnalysisById(id: Int)

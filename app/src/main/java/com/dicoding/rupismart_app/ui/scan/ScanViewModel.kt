@@ -20,22 +20,6 @@ class ScanViewModel(private val rupiSmartRepository: RupiSmartRepository) : View
     val uploadStatus = MutableLiveData<Boolean>()
 fun upload(context: Context, imageFile: File) = rupiSmartRepository.uploadImage(context,imageFile)
 
-    fun uploadImage(context: Context,imageFile: File) {
-        rupiSmartRepository.uploadImage(context,imageFile).observeForever { result ->
-            _uploadResult.postValue(result)
 
-            when (result) {
-                is Result.Success -> {
-                    uploadStatus.postValue(true)
-                }
-                is Result.Error -> {
-                    uploadStatus.postValue(false)
-                    Log.e("ScanViewModel", "Upload error: ${result.error}")
-                }
-                is Result.Loading -> {
-                    uploadStatus.postValue(false)
-                }
-            }
-        }
-    }
+    fun saveToHistory(label: String, index: Int) = rupiSmartRepository.saveToHistory(label,index)
 }

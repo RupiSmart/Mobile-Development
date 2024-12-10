@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">RupiSmart-App</string>
     <string name="title_history">History</string>
-    <string name="title_camera">Scan</string>
+    <string name="title_camera">Scan Nominal</string>
     <string name="title_help">Help</string>
     <string name="title_setting">Setting</string>
     <string name="lang_title">Bahasa</string>
@@ -24,4 +24,19 @@
     <string name="yesterday">kemarin</string>
     <string name="click_one">Click satu Kali untuk Scan Uang</string>
     <string name="verified">TERVERIFIKASI</string>
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_camera2">Scan Keaslian</string>
+    <string name="switch_to">Beralih Ke %1$s</string>
+    <string name="hundred">Seratus</string>
+    <string name="five_hundred">Lima Ratus</string>
+    <string name="one_hundred_thousand">Seratus Ribu</string>
+    <string name="ten_thousand">Sepuluh Ribu</string>
+    <string name="thousand">Seribu</string>
+    <string name="two_hudred">Dua Ratus</string>
+    <string name="two_thousand">Dua Ribu</string>
+    <string name="twenty_thousand">Dua Puluh RIbu</string>
+    <string name="fivety_thousand">Lima Puluh Ribu</string>
+    <string name="five_thousand">Lima RIbu</string>
+    <string name="seventy_five_thousand">Tujuh Puluh Lima Ribu</string>
 </resources>

@@ -33,8 +33,8 @@ class historyAdapter: ListAdapter<HistoryEntity, historyAdapter.MyViewHolder>(hi
     class MyViewHolder(private val binding: ItemHistoryBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(history: HistoryEntity){
             val context = binding.root.context
-            binding.tvItem.text = history.type
-            binding.tvNominal.text = history.nominal.toString()
+            binding.tvItem.text = history.label
+            binding.tvNominal.text = history.nominal
             binding.tvDateTime.text = history.timestamp.formatTimestamp(context)
             val tvDesc = binding.tvItem
             tvDesc.paintFlags = tvDesc.paintFlags or Paint.UNDERLINE_TEXT_FLAG

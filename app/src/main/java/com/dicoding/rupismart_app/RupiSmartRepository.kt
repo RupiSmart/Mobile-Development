@@ -34,7 +34,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.ByteArrayOutputStream
 import com.dicoding.rupismart_app.data.Result
 import com.dicoding.rupismart_app.data.remote.response.PredictionTime
-import com.dicoding.rupismart_app.utils.timestampResult
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -85,18 +84,6 @@ class RupiSmartRepository private constructor(
             val requestFile = imageFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
             val body = MultipartBody.Part.createFormData("image", imageFile.name, requestFile)
             val response = services.uploadImage(body)
-            val imageUri = getImageUriFromFile(context, imageFile)
-            val imageString = compressAndConvertImageToBase64(context,imageUri)
-            val analysisEntity = HistoryEntity(
-                id = 0,
-                nominal = "",
-                type = "Uang",
-                confidence = "",
-                label = "",
-                img = imageString,
-                timestamp = timestampResult(response.result.predictionTime)
-            )
-            dao.insertHistory(analysisEntity)
             emit(Result.Success(response))
         } catch (e: HttpException) {
             val jsonInString = e.response()?.errorBody()?.string()
@@ -121,6 +108,38 @@ class RupiSmartRepository private constructor(
         val byteArray = outputStream.toByteArray()
         return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
+
+    fun saveToHistory(label: String,index:Int) {
+        val milis=System.currentTimeMillis()
+                val analysisEntity = HistoryEntity(
+                    id = 0,
+                    nominal = getNominal(index),
+                    label = label,
+                    timestamp = milis.toString()
+                )
+                dao.insertHistory(analysisEntity)
+
+    }
+
+    private fun getNominal(index: Int): String {
+        return when (index) {
+            0 -> "100"
+            1 -> "500"
+            2 -> "100.000"
+            3 -> "10.000"
+            4 -> "1.000"
+            5 -> "200"
+            6 -> "1.000"
+            7 -> "2.000"
+            8 -> "20.000"
+            9 -> "50.000"
+            10 -> "5.000"
+            11 -> "75.000"
+            else -> ""
+        }
+
+    }
+
     companion object {
         @Volatile
         private var instance: RupiSmartRepository? = null

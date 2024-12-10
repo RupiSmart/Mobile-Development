@@ -20,6 +20,7 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
@@ -28,6 +29,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.transition.Visibility
 import com.dicoding.rupismart_app.R
 import com.dicoding.rupismart_app.ViewModelFactory
 import com.dicoding.rupismart_app.data.Result
@@ -36,7 +38,6 @@ import com.dicoding.rupismart_app.helper.Classifications
 import com.dicoding.rupismart_app.helper.ImageClassifierHelper
 import com.dicoding.rupismart_app.ui.setting.SettingActivity
 import com.dicoding.rupismart_app.utils.SoundPoolPlayer
-import com.dicoding.rupismart_app.utils.imageProxyToBitmap
 import com.dicoding.rupismart_app.utils.reduceIMage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -51,8 +52,8 @@ class ScanFragment : Fragment() {
     private val viewModel by viewModels<ScanViewModel> {
         ViewModelFactory.getInstance(requireContext())
     }
+    private var mode = false
     private var onProcess = false
-    private var notificationActive = false
     private lateinit var tts: TextToSpeech
     private var _binding: FragmentScanBinding? = null
     private val binding get() = _binding!!
@@ -67,7 +68,7 @@ class ScanFragment : Fragment() {
             ActivityResultContracts.RequestPermission()
         ) { isGranted ->
             if (isGranted) {
-//                startCamera()
+                startCamera()
                 startClassification()
             } else {
                 Toast.makeText(requireContext(),
@@ -102,20 +103,42 @@ class ScanFragment : Fragment() {
 
         SoundPoolPlayer.initialize(requireContext(),listOf(R.raw.click,R.raw.popup))
         binding.mainAppBar.setOnMenuItemClickListener { menuItem ->
+            mode=!mode
             when (menuItem.itemId) {
-                R.id.setting -> {
-                    startActivity(Intent(requireContext(), SettingActivity::class.java))
+                R.id.switch_menu -> {
+                   switchMode()
+                    if(mode){
+                        tspeech(getString(R.string.switch_to, getString(R.string.title_camera2)))
+                    }else{
+                        tspeech(getString(R.string.switch_to, getString(R.string.title_camera)))
+
+                    }
                     true
                 }
                 else -> false
             }
         }
-        startClassification()
         startAction()
-//        startCamera()
 
    }
-//clasification
+
+    private fun switchMode() {
+        if(mode){
+
+            binding.mainAppBar.title = getString(R.string.title_camera2)
+            imageClassifierHelper.stopAnalyzing()
+            startCamera()
+            binding.viewFinder2.visibility=View.VISIBLE
+            binding.viewFinder.visibility=View.GONE
+        }else{
+            binding.mainAppBar.title = getString(R.string.title_camera)
+            stopCamera()
+            startClassification()
+            binding.viewFinder.visibility=View.VISIBLE
+            binding.viewFinder2.visibility=View.GONE
+        }
+    }
+
     private lateinit var imageClassifierHelper: ImageClassifierHelper
     private var lastClassificationTime = 0L
     private fun startClassification() {
@@ -147,6 +170,7 @@ class ScanFragment : Fragment() {
 
                                          val resultText = "${result.label}: ${NumberFormat.getPercentInstance().format(result.score).trim()}"
                                             resultSpeech = result.label + "Rupiah"
+                                            viewModel.saveToHistory(resultSpeech,result.index)
 
                                               resultText
                                     }
@@ -164,7 +188,6 @@ class ScanFragment : Fragment() {
                                     delay(1000)
                                     binding.notificationResult.visibility = View.GONE
                                 }
-
                             }
                     }
                 }
@@ -184,11 +207,10 @@ class ScanFragment : Fragment() {
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                 .build()
+
             imageAnalyzer.setAnalyzer(Executors.newSingleThreadExecutor()) { image ->
                 imageClassifierHelper.classifyImage(image)
-
             }
-
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
             val preview = Preview.Builder().build().also {
                 it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
@@ -211,7 +233,14 @@ class ScanFragment : Fragment() {
             }
         }, ContextCompat.getMainExecutor(requireContext()))
     }
+    private fun stopCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
+        cameraProviderFuture.addListener({
+            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
+            cameraProvider.unbindAll()
+        }, ContextCompat.getMainExecutor(requireContext()))
+    }
     private fun tspeech(message: String) {
         if (!::tts.isInitialized) {
             tts = TextToSpeech(requireContext(), TextToSpeech.OnInitListener {
@@ -219,6 +248,7 @@ class ScanFragment : Fragment() {
                     val defaultLocale = Locale.getDefault()
                     tts.language = defaultLocale
                     tts.setSpeechRate(1.0f)
+
                     tts.speak(message, TextToSpeech.QUEUE_ADD, null, null)
                 }
             })
@@ -229,15 +259,20 @@ class ScanFragment : Fragment() {
 
     private fun startAction() {
 
-        binding.viewFinder.setOnClickListener {
+        if(mode){
+            startCamera()
 
-//            SoundPoolPlayer.playSound(R.raw.click)
-//            if (!onProcess) {
-////                shutterOn()
-//
-//            } else {
-//                tspeech(getString(R.string.on_process))
-//            }
+        }else{
+            startClassification()
+        }
+
+        binding.viewFinder2.setOnClickListener {
+                SoundPoolPlayer.playSound(R.raw.click)
+                if (!onProcess) {
+                    shutterOn()
+                } else {
+                    tspeech(getString(R.string.on_process))
+                }
         }
     }
 
@@ -310,11 +345,11 @@ class ScanFragment : Fragment() {
             val preview = Preview.Builder()
                 .build()
                 .also {
-                    it.surfaceProvider = binding.viewFinder.surfaceProvider
+                    it.surfaceProvider = binding.viewFinder2.surfaceProvider
                 }
 
             imageCapture = ImageCapture.Builder()
-                .setTargetRotation(binding.viewFinder.display.rotation)
+                .setTargetRotation(binding.viewFinder2.display.rotation)
                 .build()
 
             try {
@@ -342,10 +377,10 @@ class ScanFragment : Fragment() {
         }
     }
 
+
     override fun onResume() {
         super.onResume()
-//        startCamera()
-//        startClassification()
+        switchMode()
     }
 
     override fun onDestroyView() {

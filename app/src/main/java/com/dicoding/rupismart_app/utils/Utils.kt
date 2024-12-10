@@ -3,6 +3,9 @@ package com.dicoding.rupismart_app.utils
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ImageFormat
+import android.graphics.Rect
+import android.graphics.YuvImage
 import android.media.AudioAttributes
 import android.media.Image
 import android.media.SoundPool
@@ -29,6 +32,27 @@ fun ThemeisDark(isDarkModeActive: Boolean, switchTheme: SwitchMaterial? = null) 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         switchTheme?.isChecked = false
     }
+}
+ fun ImageProxy.imageProxyToBitmap(): Bitmap {
+    val yBuffer = planes[0].buffer
+    val uBuffer = planes[1].buffer
+    val vBuffer = planes[2].buffer
+
+    val ySize = yBuffer.remaining()
+    val uSize = uBuffer.remaining()
+    val vSize = vBuffer.remaining()
+
+    val nv21 = ByteArray(ySize + uSize + vSize)
+
+    yBuffer.get(nv21, 0, ySize)
+    vBuffer.get(nv21, ySize, vSize)
+    uBuffer.get(nv21, ySize + vSize, uSize)
+
+    val yuvImage = YuvImage(nv21, ImageFormat.NV21, width, height, null)
+    val out = ByteArrayOutputStream()
+    yuvImage.compressToJpeg(Rect(0, 0, width, height), 100, out)
+    val byteArray = out.toByteArray()
+    return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
 }
 fun String.formatTimestamp(context: Context): String {
     val timestamp = this.toLong()
@@ -59,8 +83,8 @@ fun String.formatTimestamp(context: Context): String {
         }
     }
 }
-fun imageProxyToBitmap(imageProxy: ImageProxy): Bitmap? {
-    val image: Image = imageProxy.image ?: return null
+fun imageProxyToBitmap(imageProxy: ImageProxy) {
+ /*   val image: Image = imageProxy.image ?: return null
     val buffer: ByteBuffer = image.planes[0].buffer
     val bytes = ByteArray(buffer.remaining())
     buffer.get(bytes)
@@ -71,7 +95,7 @@ fun imageProxyToBitmap(imageProxy: ImageProxy): Bitmap? {
     // Close image proxy when done
     imageProxy.close()
 
-    return bitmap
+    return bitmap*/
 }
 fun reduceIMage(file:File): File {
     val bitmap = BitmapFactory.decodeFile(file.path)
@@ -104,18 +128,7 @@ fun File.reduceFileImage(): File {
 }
 
 private const val MAXIMAL_SIZE = 1000000
- fun timestampResult(predictionTime: PredictionTime): String {
-    return try {
-        val dateTimeString = "${predictionTime.date} ${predictionTime.time}"
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).apply {
-            timeZone = TimeZone.getTimeZone(predictionTime.timezone)
-        }
-        val timestamp = dateFormat.parse(dateTimeString)?.time ?: System.currentTimeMillis()
-        timestamp.toString()
-    } catch (e: Exception) {
-        System.currentTimeMillis().toString()
-    }
-}
+
 object SoundPoolPlayer {
     private var soundPool: SoundPool? = null
     private val soundMap = mutableMapOf<Int, Int>()
@@ -128,7 +141,7 @@ object SoundPoolPlayer {
                 .build()
 
             soundPool = SoundPool.Builder()
-                .setMaxStreams(5) // Maksimum jumlah suara yang dimainkan bersamaan
+                .setMaxStreams(5)
                 .setAudioAttributes(audioAttributes)
                 .build()
 
