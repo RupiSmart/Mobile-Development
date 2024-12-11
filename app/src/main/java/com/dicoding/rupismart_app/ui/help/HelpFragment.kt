@@ -53,7 +53,7 @@ class HelpFragment : Fragment() {
                 tts.setSpeechRate(1.0f)
             }
         })
-        val adapter = HelpAdapter(tts)
+        val adapter = HelpAdapter()
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         viewModel.getAllHelp.observe(viewLifecycleOwner){result->
             when(result){
@@ -63,6 +63,10 @@ class HelpFragment : Fragment() {
                     Toast.makeText(requireActivity(), result.error, Toast.LENGTH_SHORT).show()
                 }
                 is Result.Success -> {
+                    val categories = result.data.categories
+                    for (category in categories) {
+                        tts.speak("${category.title},${category.text}", TextToSpeech.QUEUE_ADD, null, null)
+                    }
                     binding.progressBar.visibility = View.GONE
                     adapter.submitList(result.data.categories).apply {
                         binding.rvHelp.setHasFixedSize(false)
