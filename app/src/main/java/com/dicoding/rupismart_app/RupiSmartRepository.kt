@@ -34,6 +34,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.ByteArrayOutputStream
 import com.dicoding.rupismart_app.data.Result
 import com.dicoding.rupismart_app.data.remote.response.PredictionTime
+import com.dicoding.rupismart_app.utils.getNominal
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -124,24 +125,7 @@ class RupiSmartRepository private constructor(
                 dao.deleteLatestHistory()
             }
     }
-    private fun getNominal(index: Int): String {
-        return when (index) {
-            0 -> "100"
-            1 -> "500"
-            2 -> "100.000"
-            3 -> "10.000"
-            4 -> "1.000"
-            5 -> "200"
-            6 -> "1.000"
-            7 -> "2.000"
-            8 -> "20.000"
-            9 -> "50.000"
-            10 -> "5.000"
-            11 -> "75.000"
-            else -> ""
-        }
 
-    }
 
     companion object {
         @Volatile

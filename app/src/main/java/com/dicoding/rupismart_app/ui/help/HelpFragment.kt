@@ -46,14 +46,17 @@ class HelpFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         playAnimation()
-        tts = TextToSpeech(requireContext(), TextToSpeech.OnInitListener {
-            if (it == TextToSpeech.SUCCESS) {
-                val defaultLocale = Locale.getDefault()
-                tts.language = defaultLocale
-                tts.setSpeechRate(1.0f)
-            }
-        })
-        val adapter = HelpAdapter(tts)
+        if (!::tts.isInitialized) {
+            tts = TextToSpeech(requireContext(), TextToSpeech.OnInitListener {
+                if (it == TextToSpeech.SUCCESS) {
+                    val defaultLocale = Locale.getDefault()
+                    tts.language = defaultLocale
+                    tts.setSpeechRate(1.0f)
+
+                }
+            })
+        }
+        val adapter = HelpAdapter()
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         viewModel.getAllHelp.observe(viewLifecycleOwner){result->
             when(result){
@@ -63,12 +66,19 @@ class HelpFragment : Fragment() {
                     Toast.makeText(requireActivity(), result.error, Toast.LENGTH_SHORT).show()
                 }
                 is Result.Success -> {
+                val categories = result.data.categories
+                    for (category in categories) {
+                        Log.d("HelpFragment", "Category Title: ${category.title}")
+                        tspeech("${category.title},${category.text}")
+                    }
+
                     binding.progressBar.visibility = View.GONE
-                    adapter.submitList(result.data.categories).apply {
+                    adapter.submitList(categories).apply {
                         binding.rvHelp.setHasFixedSize(false)
                         binding.rvHelp.layoutManager = LinearLayoutManager(requireContext())
                         binding.rvHelp.adapter = adapter
                     }
+
                 }
 
             }
@@ -93,9 +103,12 @@ class HelpFragment : Fragment() {
             start()
         }
     }
-
+    private fun tspeech(message: String) {
+            tts.speak(message, TextToSpeech.QUEUE_ADD, null, null)
+    }
     override fun onDestroyView() {
         super.onDestroyView()
+
         _binding = null
     }
 }

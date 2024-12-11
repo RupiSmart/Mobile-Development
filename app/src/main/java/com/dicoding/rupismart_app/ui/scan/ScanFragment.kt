@@ -38,6 +38,7 @@ import com.dicoding.rupismart_app.helper.Classifications
 import com.dicoding.rupismart_app.helper.ImageClassifierHelper
 import com.dicoding.rupismart_app.ui.setting.SettingActivity
 import com.dicoding.rupismart_app.utils.SoundPoolPlayer
+import com.dicoding.rupismart_app.utils.getNominal
 import com.dicoding.rupismart_app.utils.reduceIMage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -49,6 +50,7 @@ import kotlin.math.log
 
 class ScanFragment : Fragment() {
     private var resultSpeech:String=""
+    private var resultNumber:String=""
     private val viewModel by viewModels<ScanViewModel> {
         ViewModelFactory.getInstance(requireContext())
     }
@@ -157,9 +159,17 @@ class ScanFragment : Fragment() {
 
    }
 
+    override fun onPause() {
+        super.onPause()
+        if(mode){
+            imageClassifierHelper.stopAnalyzing()
+        }else{
+            stopCamera()
+        }
+    }
+
     private fun switchMode() {
         if(mode){
-
             binding.mainAppBar.title = getString(R.string.title_camera2)
             imageClassifierHelper.stopAnalyzing()
             startCamera()
@@ -201,19 +211,20 @@ class ScanFragment : Fragment() {
 
                                          val resultText = "${result.label}: ${NumberFormat.getPercentInstance().format(result.score).trim()}"
                                             resultSpeech = result.label + "Rupiah"
+                                        resultNumber = "Rp.${getNominal(result.index)}"
                                             viewModel.saveToHistory(resultSpeech,result.index)
 
                                               resultText
                                     }
-
-
                                     lastClassificationTime = currentTime
                                 } else {
                                     lastClassificationTime = currentTime
                                 }
+
                                 viewLifecycleOwner.lifecycleScope.launch {
                                     binding.notificationResult.visibility = View.VISIBLE
-                                    binding.nominalNumber.text = resultSpeech
+                                    binding.nominalText.text = resultSpeech
+                                    binding.nominalNumber.text = resultNumber
                                     SoundPoolPlayer.playSound(R.raw.popup)
                                     tspeech(resultSpeech)
                                     delay(1000)

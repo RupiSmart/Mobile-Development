@@ -164,3 +164,21 @@ object SoundPoolPlayer {
         soundMap.clear()
     }
 }
+fun getNominal(index: Int): String {
+    return when (index) {
+        0 -> "100"
+        1 -> "500"
+        2 -> "100.000"
+        3 -> "10.000"
+        4 -> "1.000"
+        5 -> "200"
+        6 -> "1.000"
+        7 -> "2.000"
+        8 -> "20.000"
+        9 -> "50.000"
+        10 -> "5.000"
+        11 -> "75.000"
+        else -> ""
+    }
+
+}
