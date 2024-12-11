@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dicoding.rupismart_app.databinding.ItemHelpBinding
 import com.dicoding.rupismart_app.data.remote.response.CategoriesItem
 
-class HelpAdapter(private val tts:TextToSpeech): ListAdapter<CategoriesItem, HelpAdapter.MyViewHolder>(HelpAdapter.DIFF_CALLBACK) {
+class HelpAdapter(): ListAdapter<CategoriesItem, HelpAdapter.MyViewHolder>(HelpAdapter.DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val binding = ItemHelpBinding.inflate(LayoutInflater.from(parent.context),parent,false)
