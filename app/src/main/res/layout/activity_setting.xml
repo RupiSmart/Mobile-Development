@@ -68,7 +68,7 @@
             android:id="@+id/tv_lang_setting"
             android:layout_marginStart="8dp"
             android:textStyle="bold"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="9dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -80,8 +80,9 @@
             android:id="@+id/change_language_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="9dp"
             android:contentDescription="@string/click_to_change_lang"
-            android:src="@drawable/ic_arrow_right"
+            android:src="@drawable/chevron_right_24px"
             android:layout_alignParentEnd="true"
             />
     </RelativeLayout>
@@ -126,7 +127,7 @@
             android:id="@+id/tv_mode_setting"
             android:layout_marginStart="8dp"
             android:textStyle="bold"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="12dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -136,6 +137,7 @@
         <Switch
             android:contentDescription="Dark Mode Switch"
             android:id="@+id/switch_mode"
+            android:layout_marginTop="9dp"
             android:checked="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -160,7 +162,7 @@
             android:padding="10dp"
             android:src="@drawable/ic_text_speech" />
         <TextView
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="28dp"
             android:id="@+id/talkback"
             android:layout_marginStart="8dp"
             android:textStyle="bold"
@@ -171,13 +173,13 @@
             android:text="@string/talkback"
             tools:ignore="RelativeOverlap" />
         <ImageView
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="25dp"
             android:id="@+id/talkback_active"
             android:layout_below="@id/separator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/click_to_change_lang"
-            android:src="@drawable/ic_arrow_right"
+            android:src="@drawable/chevron_right_24px"
             android:layout_alignParentEnd="true"
             />
     </RelativeLayout>
