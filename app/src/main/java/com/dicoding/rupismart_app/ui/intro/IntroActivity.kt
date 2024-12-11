@@ -39,11 +39,10 @@ class IntroActivity : AppCompatActivity() {
     }
 
     private fun playAnimation() {
-        val rotation = ObjectAnimator.ofFloat(binding.ivIntro, View.ROTATION, 0f, 360f)
         val fade = ObjectAnimator.ofFloat(binding.ivIntro, View.ALPHA,  1f)
 
         AnimatorSet().apply {
-            playTogether(rotation, fade)
+            playSequentially(fade)
             startDelay = 500
             duration = 1000
         }.start()

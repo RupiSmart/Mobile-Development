@@ -5,7 +5,6 @@ import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,13 +12,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.rupismart_app.R
 import com.dicoding.rupismart_app.ViewModelFactory
 import com.dicoding.rupismart_app.adapter.HelpAdapter
 import com.dicoding.rupismart_app.databinding.FragmentHelpBinding
-import com.dicoding.rupismart_app.ui.scan.ScanViewModel
 import com.dicoding.rupismart_app.ui.setting.SettingActivity
 import com.dicoding.rupismart_app.data.Result
 import java.util.Locale
@@ -58,12 +55,12 @@ class HelpFragment : Fragment() {
                     Toast.makeText(requireActivity(), result.error, Toast.LENGTH_SHORT).show()
                 }
                 is Result.Success -> {
+                    panduan = ""
                     val categories = result.data.categories
                     for (category in categories) {
                         panduan+="${category.title},${category.text}"
-
-                        tspeech("${category.title},${category.text}")
                     }
+                    tspeech(panduan)
                     binding.progressBar.visibility = View.GONE
                     adapter.submitList(result.data.categories).apply {
                         binding.rvHelp.setHasFixedSize(false)
@@ -111,17 +108,10 @@ class HelpFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        if(panduan.isNotEmpty()){
-            tspeech(panduan)
-        }
-    }
     override fun onDestroyView() {
         super.onDestroyView()
         if (::tts.isInitialized) {
             tts.stop()
-//            tts.shutdown()
         }
         _binding = null
     }
