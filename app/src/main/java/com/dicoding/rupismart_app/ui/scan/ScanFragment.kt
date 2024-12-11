@@ -110,6 +110,7 @@ class ScanFragment : Fragment() {
             when (menuItem.itemId) {
                 R.id.switch_menu -> {
                    switchMode()
+                        tts.stop()
                     if(mode){
                         tspeech(getString(R.string.switch_to, getString(R.string.title_camera2)))
                     }else{
@@ -122,40 +123,7 @@ class ScanFragment : Fragment() {
             }
         }
         startAction()
-        viewModel.uploadResult.observe(viewLifecycleOwner){result->
-            when (result) {
-                is Result.Success -> {
-                    photoFile.delete()
-                    binding.progressIndicator.visibility = View.GONE
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        binding.notificationResult.visibility = View.VISIBLE
-                        binding.nominalNumber.text = result.data.result.authenticity
-                        SoundPoolPlayer.playSound(R.raw.popup)
-                        tspeech("Uang"+result.data.result.authenticity)
-                        delay(2000)
-                        binding.notificationResult.visibility = View.GONE
-                        onProcess = false
-                    }
-                }
 
-                is Result.Error -> {
-                    photoFile.delete()
-                    onProcess = false
-                    tspeech(getString(R.string.fail_to_upload_scan))
-                    tspeech(result.error)
-                    binding.progressIndicator.visibility = View.GONE
-                    Toast.makeText(requireContext(),
-                        getString(R.string.fail_to_get_img), Toast.LENGTH_SHORT)
-                        .show()
-                }
-                is Result.Loading -> {
-                    onProcess = true
-                    binding.progressIndicator.visibility = View.VISIBLE
-                }
-
-                else -> {}
-            }
-        }
 
    }
 
@@ -202,7 +170,7 @@ class ScanFragment : Fragment() {
                 ) {
                     activity?.runOnUiThread {
                     val currentTime = System.currentTimeMillis()
-                    if (currentTime - lastClassificationTime >= 4000) {
+                    if (currentTime - lastClassificationTime >= 3000) {
                             results?.let {
                                 if (it.isNotEmpty()) {
                                     val sortedResults = it.sortedByDescending { classification -> classification.score }
@@ -225,8 +193,8 @@ class ScanFragment : Fragment() {
                                     binding.notificationResult.visibility = View.VISIBLE
                                     binding.nominalText.text = resultSpeech
                                     binding.nominalNumber.text = resultNumber
-                                    SoundPoolPlayer.playSound(R.raw.popup)
                                     tspeech(resultSpeech)
+                                    SoundPoolPlayer.playSound(R.raw.popup)
                                     delay(1000)
                                     binding.notificationResult.visibility = View.GONE
                                 }
@@ -248,9 +216,11 @@ class ScanFragment : Fragment() {
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                 .build()
+
+
             imageAnalyzer.setAnalyzer(Executors.newSingleThreadExecutor()) { image ->
                 imageClassifierHelper.classifyImage(image)
-            }
+        }
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
             val preview = Preview.Builder().build().also {
                 it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
@@ -288,11 +258,11 @@ class ScanFragment : Fragment() {
                     val defaultLocale = Locale.getDefault()
                     tts.language = defaultLocale
                     tts.setSpeechRate(1.0f)
-
                     tts.speak(message, TextToSpeech.QUEUE_ADD, null, null)
                 }
             })
         } else {
+        Log.d("ScanFragment", "tspeech: disana")
             tts.speak(message, TextToSpeech.QUEUE_ADD, null, null)
         }
     }
@@ -328,12 +298,40 @@ class ScanFragment : Fragment() {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val p = reduceIMage(photoFile)
                     setPhotoFile(p)
-                    viewModel.uploadImage(requireContext(), p)
+                    viewModel.uploadImage(requireContext(), p).observe(viewLifecycleOwner) { result ->
+                        when (result) {
+                            is Result.Loading -> {
+                                binding.progressIndicator.visibility = View.VISIBLE
+                            }
+                            is Result.Success -> {
+                                val response = result.data
+                                photoFile.delete()
+                                binding.progressIndicator.visibility = View.GONE
+                                viewLifecycleOwner.lifecycleScope.launch {
+                                    binding.notificationResult.visibility = View.VISIBLE
+                                    binding.nominalNumber.text = result.data.result.authenticity
+                                    SoundPoolPlayer.playSound(R.raw.popup)
+                                    tspeech("Uang"+result.data.result.authenticity)
+                                    delay(2000)
+                                    binding.notificationResult.visibility = View.GONE
+                                    onProcess = false
+                                }
+                            }
+                            is Result.Error -> {
+                                photoFile.delete()
+                                onProcess = false
+                                tspeech(getString(R.string.fail_to_upload_scan))
+                                tspeech(result.error)
+                                binding.progressIndicator.visibility = View.GONE
+                                Toast.makeText(requireContext(),
+                                    getString(R.string.fail_to_get_img), Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                        }
+                    }
                 }
-            }
-        )
+            })
     }
-
     private fun setPhotoFile(p: File) {
         photoFile = p
     }
@@ -364,7 +362,6 @@ class ScanFragment : Fragment() {
             } catch (exc: Exception) {
                 Toast.makeText(requireContext(),
                     getString(R.string.show_camera_failed), Toast.LENGTH_SHORT).show()
-                Log.e(TAG, "startCamera: ${exc.message}")
             }
         }, ContextCompat.getMainExecutor(requireContext()))
     }
@@ -394,7 +391,7 @@ class ScanFragment : Fragment() {
         _binding = null
         if (::tts.isInitialized) {
             tts.stop()
-            tts.shutdown()
+//            tts.shutdown()
         }
         viewModel.uploadResult.removeObservers(viewLifecycleOwner)
         SoundPoolPlayer.release()

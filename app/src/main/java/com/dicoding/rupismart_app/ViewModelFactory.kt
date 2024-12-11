@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.dicoding.rupismart_app.di.Injection
 import com.dicoding.rupismart_app.ui.help.HelpViewModel
 import com.dicoding.rupismart_app.ui.history.HistoryViewModel
+import com.dicoding.rupismart_app.ui.intro.IntroViewModel
 import com.dicoding.rupismart_app.ui.scan.ScanViewModel
 import com.dicoding.rupismart_app.ui.setting.SettingViewModel
 
@@ -17,6 +18,7 @@ class ViewModelFactory private constructor(
     @Suppress
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
+            modelClass.isAssignableFrom(IntroViewModel::class.java) -> IntroViewModel(rupiSmartRepository) as T
             modelClass.isAssignableFrom(ScanViewModel::class.java) -> ScanViewModel(rupiSmartRepository) as T
             modelClass.isAssignableFrom(HistoryViewModel::class.java) -> HistoryViewModel(rupiSmartRepository) as T
             modelClass.isAssignableFrom(HelpViewModel::class.java) -> HelpViewModel(rupiSmartRepository) as T

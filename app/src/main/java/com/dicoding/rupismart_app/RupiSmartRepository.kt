@@ -94,9 +94,6 @@ class RupiSmartRepository private constructor(
             emit(Result.Error(e.message.toString()))
         }
     }
-
-
-
     private fun getImageUriFromFile(context: Context, imageFile: File): Uri {
         return Uri.fromFile(imageFile)
     }

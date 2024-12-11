@@ -29,6 +29,7 @@ class HelpFragment : Fragment() {
     private var _binding: FragmentHelpBinding? = null
     private val binding get() = _binding!!
     private lateinit var tts: TextToSpeech
+    private var panduan: String =""
     private val viewModel by viewModels<HelpViewModel> {
         ViewModelFactory.getInstance(requireContext())
     }
@@ -46,13 +47,7 @@ class HelpFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         playAnimation()
-        tts = TextToSpeech(requireContext(), TextToSpeech.OnInitListener {
-            if (it == TextToSpeech.SUCCESS) {
-                val defaultLocale = Locale.getDefault()
-                tts.language = defaultLocale
-                tts.setSpeechRate(1.0f)
-            }
-        })
+
         val adapter = HelpAdapter()
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         viewModel.getAllHelp.observe(viewLifecycleOwner){result->
@@ -65,7 +60,9 @@ class HelpFragment : Fragment() {
                 is Result.Success -> {
                     val categories = result.data.categories
                     for (category in categories) {
-                        tts.speak("${category.title},${category.text}", TextToSpeech.QUEUE_ADD, null, null)
+                        panduan+="${category.title},${category.text}"
+
+                        tspeech("${category.title},${category.text}")
                     }
                     binding.progressBar.visibility = View.GONE
                     adapter.submitList(result.data.categories).apply {
@@ -81,6 +78,7 @@ class HelpFragment : Fragment() {
             when(menuItem.itemId){
                 R.id.setting -> {
                     startActivity(Intent(requireContext(), SettingActivity::class.java))
+                   tts.stop()
                     true
                 }
                 else -> false
@@ -95,11 +93,36 @@ class HelpFragment : Fragment() {
             playSequentially(appBar, rvHistory)
             startDelay = 500
             start()
+
+        }
+    }
+    private fun tspeech(message: String) {
+        if (!::tts.isInitialized) {
+            tts = TextToSpeech(requireContext(), TextToSpeech.OnInitListener {
+                if (it == TextToSpeech.SUCCESS) {
+                    val defaultLocale = Locale.getDefault()
+                    tts.language = defaultLocale
+                    tts.setSpeechRate(1.0f)
+                    tts.speak(message, TextToSpeech.QUEUE_ADD, null, null)
+                }
+            })
+        } else {
+            tts.speak(message, TextToSpeech.QUEUE_ADD, null, null)
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if(panduan.isNotEmpty()){
+            tspeech(panduan)
+        }
+    }
     override fun onDestroyView() {
         super.onDestroyView()
+        if (::tts.isInitialized) {
+            tts.stop()
+//            tts.shutdown()
+        }
         _binding = null
     }
 }

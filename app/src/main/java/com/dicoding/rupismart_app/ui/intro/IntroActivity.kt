@@ -5,9 +5,12 @@ import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.lifecycleScope
 import com.dicoding.rupismart_app.MainActivity
+import com.dicoding.rupismart_app.ViewModelFactory
 import com.dicoding.rupismart_app.databinding.ActivityIntroBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -15,14 +18,22 @@ import kotlinx.coroutines.launch
 class IntroActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityIntroBinding
-
+    private val viewModel by viewModels<IntroViewModel> {
+        ViewModelFactory.getInstance(this)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityIntroBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         supportActionBar?.hide()
-
+        viewModel.getDarkMode().observe(this) { isDarkMode ->
+            if (isDarkMode) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        }
         splashScreenHandler()
         playAnimation()
     }
