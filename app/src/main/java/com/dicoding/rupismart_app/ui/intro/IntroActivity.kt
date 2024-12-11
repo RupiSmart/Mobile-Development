@@ -1,5 +1,6 @@
 package com.dicoding.rupismart_app.ui.intro
 
+import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
@@ -26,12 +27,17 @@ class IntroActivity : AppCompatActivity() {
         playAnimation()
     }
 
-    private fun playAnimation(){
-        ObjectAnimator.ofFloat(binding.ivIntro, View.ALPHA, 1F).apply {
+    private fun playAnimation() {
+        val rotation = ObjectAnimator.ofFloat(binding.ivIntro, View.ROTATION, 0f, 360f)
+        val fade = ObjectAnimator.ofFloat(binding.ivIntro, View.ALPHA,  1f)
+
+        AnimatorSet().apply {
+            playTogether(rotation, fade)
             startDelay = 500
             duration = 1000
         }.start()
     }
+
 
     private fun splashScreenHandler() {
         lifecycleScope.launch {

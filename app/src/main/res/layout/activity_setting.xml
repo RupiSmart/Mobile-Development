@@ -135,7 +135,7 @@
             tools:ignore="RelativeOverlap" />
         <Switch
             android:contentDescription="Dark Mode Switch"
-            android:id="@+id/swith_mode"
+            android:id="@+id/switch_mode"
             android:checked="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
