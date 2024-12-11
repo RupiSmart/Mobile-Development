@@ -94,6 +94,8 @@ class ScanFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         playAnimation()
+
+
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
 
         if (!allPermissionGranted()) {
@@ -196,11 +198,14 @@ class ScanFragment : Fragment() {
                                     val sortedResults = it.sortedByDescending { classification -> classification.score }
                                     val displayResult = sortedResults.joinToString("\n") { result ->
 
+
                                          val resultText = "${result.label}: ${NumberFormat.getPercentInstance().format(result.score).trim()}"
                                             resultSpeech = result.label + "Rupiah"
                                             viewModel.saveToHistory(resultSpeech,result.index)
+
                                               resultText
                                     }
+
 
                                     lastClassificationTime = currentTime
                                 } else {
@@ -355,14 +360,8 @@ class ScanFragment : Fragment() {
 
     private fun playAnimation() {
         val appBar = ObjectAnimator.ofFloat(binding.appBarLayout, View.ALPHA, 1F).setDuration(400)
-        val camera1 = ObjectAnimator.ofFloat(binding.viewFinder, View.ALPHA, 1F).setDuration(400)
-        val camera2 = ObjectAnimator.ofFloat(binding.viewFinder2, View.ALPHA, 1F).setDuration(400)
         AnimatorSet().apply {
-            playTogether(
-                appBar,
-                camera1,
-                camera2
-            )
+            playSequentially(appBar)
             startDelay = 500
             start()
             if(mode){

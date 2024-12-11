@@ -4,6 +4,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,11 +12,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.rupismart_app.R
 import com.dicoding.rupismart_app.ViewModelFactory
-import com.dicoding.rupismart_app.adapter.HelpAdapter
+import com.dicoding.rupismart_app.adapter.helpAdapter
 import com.dicoding.rupismart_app.databinding.FragmentHelpBinding
+import com.dicoding.rupismart_app.ui.scan.ScanViewModel
 import com.dicoding.rupismart_app.ui.setting.SettingActivity
 import com.dicoding.rupismart_app.data.Result
 class HelpFragment : Fragment() {
@@ -39,7 +42,7 @@ class HelpFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         playAnimation()
-        val adapter = HelpAdapter()
+        val adapter = helpAdapter()
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         viewModel.getAllHelp.observe(viewLifecycleOwner){result->
             when(result){

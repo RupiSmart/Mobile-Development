@@ -25,9 +25,10 @@ class HelpAdapter(): ListAdapter<CategoriesItem, HelpAdapter.MyViewHolder>(HelpA
     class MyViewHolder(private val binding: ItemHelpBinding) : RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
         fun bind(help: CategoriesItem, index:Int){
+        val number=index+1;
             binding.tvTitleHelp.text = help.title
             binding.tvDescHelp.text = help.text
-            binding.helpNumber.text = (index+1).toString()
+            binding.helpNumber.text = (number).toString()
         }
 
 
