@@ -95,6 +95,7 @@ class ScanFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         playAnimation()
 
+
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
 
         if (!allPermissionGranted()) {
@@ -119,6 +120,40 @@ class ScanFragment : Fragment() {
             }
         }
         startAction()
+        viewModel.uploadResult.observe(viewLifecycleOwner){result->
+            when (result) {
+                is Result.Success -> {
+                    photoFile.delete()
+                    binding.progressIndicator.visibility = View.GONE
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        binding.notificationResult.visibility = View.VISIBLE
+                        binding.nominalNumber.text = result.data.result.authenticity
+                        SoundPoolPlayer.playSound(R.raw.popup)
+                        tspeech("Uang"+result.data.result.authenticity)
+                        delay(2000)
+                        binding.notificationResult.visibility = View.GONE
+                        onProcess = false
+                    }
+                }
+
+                is Result.Error -> {
+                    photoFile.delete()
+                    onProcess = false
+                    tspeech(getString(R.string.fail_to_upload_scan))
+                    tspeech(result.error)
+                    binding.progressIndicator.visibility = View.GONE
+                    Toast.makeText(requireContext(),
+                        getString(R.string.fail_to_get_img), Toast.LENGTH_SHORT)
+                        .show()
+                }
+                is Result.Loading -> {
+                    onProcess = true
+                    binding.progressIndicator.visibility = View.VISIBLE
+                }
+
+                else -> {}
+            }
+        }
 
    }
 
@@ -150,7 +185,6 @@ class ScanFragment : Fragment() {
                         Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
                     }
                 }
-
                 @SuppressLint("SetTextI18n")
                 override fun onResults(
                     results: List<Classifications>?,
@@ -163,10 +197,7 @@ class ScanFragment : Fragment() {
                                 if (it.isNotEmpty()) {
                                     val sortedResults = it.sortedByDescending { classification -> classification.score }
                                     val displayResult = sortedResults.joinToString("\n") { result ->
-                                        if(result.score < .85f){
-                                            resultSpeech="sedih"
-                                            return@joinToString "Agus Sedih bangett :("
-                                        }
+
 
                                          val resultText = "${result.label}: ${NumberFormat.getPercentInstance().format(result.score).trim()}"
                                             resultSpeech = result.label + "Rupiah"
@@ -196,7 +227,6 @@ class ScanFragment : Fragment() {
         )
 
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
-
         cameraProviderFuture.addListener({
             val resolutionSelector = ResolutionSelector.Builder()
                 .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
@@ -207,7 +237,6 @@ class ScanFragment : Fragment() {
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                 .build()
-
             imageAnalyzer.setAnalyzer(Executors.newSingleThreadExecutor()) { image ->
                 imageClassifierHelper.classifyImage(image)
             }
@@ -258,14 +287,6 @@ class ScanFragment : Fragment() {
     }
 
     private fun startAction() {
-
-        if(mode){
-            startCamera()
-
-        }else{
-            startClassification()
-        }
-
         binding.viewFinder2.setOnClickListener {
                 SoundPoolPlayer.playSound(R.raw.click)
                 if (!onProcess) {
@@ -296,38 +317,7 @@ class ScanFragment : Fragment() {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val p = reduceIMage(photoFile)
                     setPhotoFile(p)
-                    viewModel.upload(requireContext(), p).observe(viewLifecycleOwner){result->
-                        when (result) {
-                            is Result.Success -> {
-                                photoFile.delete()
-                                binding.progressIndicator.visibility = View.GONE
-                                viewLifecycleOwner.lifecycleScope.launch {
-                                    binding.notificationResult.visibility = View.VISIBLE
-                                    binding.nominalNumber.text = result.data.result.authenticity
-                                    SoundPoolPlayer.playSound(R.raw.popup)
-                                    tspeech("Uang"+result.data.result.authenticity)
-                                    delay(2000)
-                                    binding.notificationResult.visibility = View.GONE
-                                    onProcess = false
-                                }
-                            }
-
-                            is Result.Error -> {
-                                photoFile.delete()
-                                onProcess = false
-                                tspeech(getString(R.string.fail_to_upload_scan))
-                                tspeech(result.error)
-                                binding.progressIndicator.visibility = View.GONE
-                                Toast.makeText(requireContext(),
-                                    getString(R.string.fail_to_get_img), Toast.LENGTH_SHORT)
-                                    .show()
-                            }
-                            is Result.Loading -> {
-                                onProcess = true
-                                binding.progressIndicator.visibility = View.VISIBLE
-                            }
-                        }
-                    }
+                    viewModel.uploadImage(requireContext(), p)
                 }
             }
         )
@@ -374,6 +364,11 @@ class ScanFragment : Fragment() {
             playSequentially(appBar)
             startDelay = 500
             start()
+            if(mode){
+                startCamera()
+            }else{
+                startClassification()
+            }
         }
     }
 
@@ -386,6 +381,11 @@ class ScanFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        if (::tts.isInitialized) {
+            tts.stop()
+            tts.shutdown()
+        }
+        viewModel.uploadResult.removeObservers(viewLifecycleOwner)
         SoundPoolPlayer.release()
     }
 

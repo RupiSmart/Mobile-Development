@@ -1,19 +1,16 @@
 package com.dicoding.rupismart_app.adapter
 
-
-
 import android.annotation.SuppressLint
-import android.graphics.Paint
+import android.speech.tts.TextToSpeech
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.dicoding.rupismart_app.R
 import com.dicoding.rupismart_app.databinding.ItemHelpBinding
 import com.dicoding.rupismart_app.data.remote.response.CategoriesItem
 
-class helpAdapter: ListAdapter<CategoriesItem, helpAdapter.MyViewHolder>(helpAdapter.DIFF_CALLBACK) {
+class HelpAdapter(private val tts:TextToSpeech): ListAdapter<CategoriesItem, HelpAdapter.MyViewHolder>(HelpAdapter.DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val binding = ItemHelpBinding.inflate(LayoutInflater.from(parent.context),parent,false)

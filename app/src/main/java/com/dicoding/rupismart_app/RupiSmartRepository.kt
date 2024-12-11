@@ -119,8 +119,11 @@ class RupiSmartRepository private constructor(
                 )
                 dao.insertHistory(analysisEntity)
 
+            if(dao.getHistoryCount()>100)
+            {
+                dao.deleteLatestHistory()
+            }
     }
-
     private fun getNominal(index: Int): String {
         return when (index) {
             0 -> "100"

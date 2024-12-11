@@ -13,13 +13,15 @@ interface RupismartDao
 @Query("SELECT * FROM history ORDER BY timestamp DESC")
 fun getAllHistory(): LiveData<List<HistoryEntity>>
 
-@Query("SELECT * FROM history ORDER BY timestamp DESC LIMIT 1")
-suspend fun getLatestHistory(): HistoryEntity?
+@Query("DELETE FROM history WHERE id = (SELECT id FROM history ORDER BY timestamp ASC LIMIT 1)")
+fun deleteLatestHistory()
 
 @Insert(onConflict = OnConflictStrategy.IGNORE)
  fun insertHistory(history: HistoryEntity)
 
-@Query("DELETE FROM history WHERE id = :id")
-suspend fun deleteAnalysisById(id: Int)
+ @Query("DELETE FROM history WHERE id = :id")
+ fun deleteHistoryById(id: Int)
 
+ @Query("SELECT COUNT(*) FROM history")
+  fun getHistoryCount(): Int
 }
