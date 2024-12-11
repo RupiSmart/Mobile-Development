@@ -153,6 +153,7 @@
             android:paddingVertical="15dp"
             android:textAlignment="center"
             android:textColor="@color/white"
+            android:maxLines="2"
             android:textSize="35sp"
             android:textStyle="bold"
             tools:text="Rp.100.000" />
