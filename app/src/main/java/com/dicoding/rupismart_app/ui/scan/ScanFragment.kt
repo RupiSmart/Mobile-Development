@@ -4,9 +4,7 @@ import android.Manifest
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.SoundPool
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
@@ -20,7 +18,6 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
@@ -29,14 +26,12 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.transition.Visibility
 import com.dicoding.rupismart_app.R
 import com.dicoding.rupismart_app.ViewModelFactory
 import com.dicoding.rupismart_app.data.Result
 import com.dicoding.rupismart_app.databinding.FragmentScanBinding
 import com.dicoding.rupismart_app.helper.Classifications
 import com.dicoding.rupismart_app.helper.ImageClassifierHelper
-import com.dicoding.rupismart_app.ui.setting.SettingActivity
 import com.dicoding.rupismart_app.utils.SoundPoolPlayer
 import com.dicoding.rupismart_app.utils.getNominal
 import com.dicoding.rupismart_app.utils.reduceIMage
@@ -46,7 +41,6 @@ import java.io.File
 import java.text.NumberFormat
 import java.util.Locale
 import java.util.concurrent.Executors
-import kotlin.math.log
 
 class ScanFragment : Fragment() {
     private var resultSpeech:String=""
@@ -61,7 +55,6 @@ class ScanFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var photoFile: File
 
-    private var spLoaded = false
     private var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private lateinit var imageCapture: ImageCapture
 
@@ -112,9 +105,9 @@ class ScanFragment : Fragment() {
                    switchMode()
                         tts.stop()
                     if(mode){
-                        tspeech(getString(R.string.switch_to, getString(R.string.title_camera2)))
+                        speech(getString(R.string.switch_to, getString(R.string.title_camera2)))
                     }else{
-                        tspeech(getString(R.string.switch_to, getString(R.string.title_camera)))
+                        speech(getString(R.string.switch_to, getString(R.string.title_camera)))
 
                     }
                     true
@@ -174,15 +167,20 @@ class ScanFragment : Fragment() {
                             results?.let {
                                 if (it.isNotEmpty()) {
                                     val sortedResults = it.sortedByDescending { classification -> classification.score }
-                                    val displayResult = sortedResults.joinToString("\n") { result ->
-
-
-                                         val resultText = "${result.label}: ${NumberFormat.getPercentInstance().format(result.score).trim()}"
-                                            resultSpeech = result.label + "Rupiah"
-                                        resultNumber = "Rp.${getNominal(result.index)}"
-                                            viewModel.saveToHistory(resultSpeech,result.index)
-
-                                              resultText
+                                    sortedResults.joinToString("\n") { result ->
+                                        val resultText = "${result.label}: ${NumberFormat.getPercentInstance().format(result.score).trim()}"
+                                        if(result.score < 0.8f){
+                                            resultSpeech = getString(R.string.try_again_later)
+                                            binding.notFound.visibility = View.VISIBLE
+                                            binding.nominalNumber.visibility = View.GONE
+                                            return@joinToString getString(R.string.try_again_later)
+                                        }
+                                        binding.notFound.visibility = View.GONE
+                                        binding.nominalNumber.visibility = View.VISIBLE
+                                        resultSpeech = result.label
+                                        resultNumber = getNominal(result.index)
+                                        viewModel.saveToHistory(resultSpeech,result.index)
+                                        resultText
                                     }
                                     lastClassificationTime = currentTime
                                 } else {
@@ -193,9 +191,9 @@ class ScanFragment : Fragment() {
                                     binding.notificationResult.visibility = View.VISIBLE
                                     binding.nominalText.text = resultSpeech
                                     binding.nominalNumber.text = resultNumber
-                                    tspeech(resultSpeech)
+                                    speech(resultSpeech)
                                     SoundPoolPlayer.playSound(R.raw.popup)
-                                    delay(1000)
+                                    delay(2000)
                                     binding.notificationResult.visibility = View.GONE
                                 }
                             }
@@ -223,7 +221,7 @@ class ScanFragment : Fragment() {
         }
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
             val preview = Preview.Builder().build().also {
-                it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
+                it.surfaceProvider = binding.viewFinder.surfaceProvider
             }
             try {
                 cameraProvider.unbindAll()
@@ -236,7 +234,7 @@ class ScanFragment : Fragment() {
             } catch (exc: Exception) {
                 Toast.makeText(
                     requireContext(),
-                    "Gagal memunculkan kamera.",
+                    getString(R.string.camera_fail),
                     Toast.LENGTH_SHORT
                 ).show()
                 Log.e(TAG, "startCamera: ${exc.message}")
@@ -251,18 +249,17 @@ class ScanFragment : Fragment() {
             cameraProvider.unbindAll()
         }, ContextCompat.getMainExecutor(requireContext()))
     }
-    private fun tspeech(message: String) {
+    private fun speech(message: String) {
         if (!::tts.isInitialized) {
-            tts = TextToSpeech(requireContext(), TextToSpeech.OnInitListener {
+            tts = TextToSpeech(requireContext()) {
                 if (it == TextToSpeech.SUCCESS) {
                     val defaultLocale = Locale.getDefault()
                     tts.language = defaultLocale
                     tts.setSpeechRate(1.0f)
                     tts.speak(message, TextToSpeech.QUEUE_ADD, null, null)
                 }
-            })
+            }
         } else {
-        Log.d("ScanFragment", "tspeech: disana")
             tts.speak(message, TextToSpeech.QUEUE_ADD, null, null)
         }
     }
@@ -273,7 +270,7 @@ class ScanFragment : Fragment() {
                 if (!onProcess) {
                     shutterOn()
                 } else {
-                    tspeech(getString(R.string.on_process))
+                    speech(getString(R.string.on_process))
                 }
         }
     }
@@ -304,14 +301,15 @@ class ScanFragment : Fragment() {
                                 binding.progressIndicator.visibility = View.VISIBLE
                             }
                             is Result.Success -> {
-                                val response = result.data
                                 photoFile.delete()
                                 binding.progressIndicator.visibility = View.GONE
                                 viewLifecycleOwner.lifecycleScope.launch {
+                                    binding.notFound.visibility = View.GONE
+                                    binding.nominalText.text = result.data.result.authenticity
                                     binding.notificationResult.visibility = View.VISIBLE
                                     binding.nominalNumber.text = result.data.result.authenticity
                                     SoundPoolPlayer.playSound(R.raw.popup)
-                                    tspeech("Uang"+result.data.result.authenticity)
+                                    speech(getString(R.string.auth)+result.data.result.authenticity)
                                     delay(2000)
                                     binding.notificationResult.visibility = View.GONE
                                     onProcess = false
@@ -320,8 +318,8 @@ class ScanFragment : Fragment() {
                             is Result.Error -> {
                                 photoFile.delete()
                                 onProcess = false
-                                tspeech(getString(R.string.fail_to_upload_scan))
-                                tspeech(result.error)
+                                speech(getString(R.string.fail_to_upload_scan))
+                                speech(result.error)
                                 binding.progressIndicator.visibility = View.GONE
                                 Toast.makeText(requireContext(),
                                     getString(R.string.fail_to_get_img), Toast.LENGTH_SHORT)

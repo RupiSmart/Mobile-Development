@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">RupiSmart</string>
+    <string name="title_history">Riwayat</string>
+    <string name="title_camera">Pindai Nominal</string>
+    <string name="title_help">Bantuan</string>
+    <string name="title_setting">Pengaturan</string>
+    <string name="lang_title">Bahasa</string>
+    <string name="language_app_icon">Ikon Aplikasi Bahasa</string>
+    <string name="click_to_change_lang">klik untuk mengganti bahasa</string>
+    <string name="pref_title">Preferensi</string>
+    <string name="dark_mode_pref">Mode Gelap</string>
+    <string name="talkback">Pembaca Layar</string>
+    <string name="permission_request_denied">Perizinan Ditolak</string>
+    <string name="fail_to_upload_scan">Gagal Mengambil Data, Coba Lagi</string>
+    <string name="fail_to_get_img">Gagal Mengambil Gambar</string>
+    <string name="on_process">Sedang Memindai, Harap Tunggu</string>
+    <string name="show_camera_failed">Gagal Menampilkan Kamera</string>
+    <string name="just_now">baru saja</string>
+    <string name="min_ago">%1$s menit yang lalu</string>
+    <string name="hour_ago">%1$s jam yang lalu</string>
+    <string name="yesterday">kemarin</string>
+    <string name="click_one">Klik Satu Kali untuk Memindai Uang</string>
+    <string name="verified">TERVERIFIKASI</string>
+    <string name="title_camera2">Pindai Keaslian</string>
+    <string name="switch_to">Beralih ke %1$s</string>
+    <string name="hundred">Seratus</string>
+    <string name="five_hundred">Lima Ratus</string>
+    <string name="one_hundred_thousand">Seratus Ribu Rupiah</string>
+    <string name="ten_thousand">Sepuluh Ribu Rupiah</string>
+    <string name="thousand">Seribu Rupiah</string>
+    <string name="two_thousand">Dua Ribu Rupiah</string>
+    <string name="twenty_thousand">Dua Puluh Ribu Rupiah</string>
+    <string name="fifty_thousand">Lima Puluh Ribu Rupiah</string>
+    <string name="five_thousand">Lima Ribu Rupiah</string>
+    <string name="seventy_five_thousand">Tujuh Puluh Lima Ribu Rupiah</string>
+    <string name="auth">Uang</string>
+    <string name="camera_fail">Gagal Menampilkan Kamera.</string>
+    <string name="try_again_later">Coba Lagi Nanti</string>
+    <string name="intro_logo">RupiSmart</string>
+    <string name="help_image">Gambar Bantuan</string>
+    <string name="dark_mode_switch">Sakelar Mode Gelap</string>
+
+</resources>

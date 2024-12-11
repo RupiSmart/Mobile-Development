@@ -73,11 +73,11 @@ class ImageClassifierHelper(
             context.getString(R.string.one_hundred_thousand),
             context.getString(R.string.ten_thousand),
             context.getString(R.string.thousand),
-            context.getString(R.string.two_hudred),
-            context.getString(R.string.thousand),
             context.getString(R.string.two_thousand),
             context.getString(R.string.twenty_thousand),
-            context.getString(R.string.fivety_thousand),
+            context.getString(R.string.two_thousand),
+            context.getString(R.string.twenty_thousand),
+            context.getString(R.string.fifty_thousand),
             context.getString(R.string.five_thousand),
             context.getString(R.string.seventy_five_thousand)
         )

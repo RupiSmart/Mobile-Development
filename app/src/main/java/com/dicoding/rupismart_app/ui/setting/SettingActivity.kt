@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.dicoding.rupismart_app.ViewModelFactory
 import com.dicoding.rupismart_app.databinding.ActivitySettingBinding
-import com.dicoding.rupismart_app.utils.ThemeisDark
+import com.dicoding.rupismart_app.utils.themeIsDark
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -62,7 +62,7 @@ class SettingActivity : AppCompatActivity() {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         }
         viewModel.darkMode.observe(this) { isDarkMode ->
-            ThemeisDark(isDarkMode)
+            themeIsDark(isDarkMode)
             binding.switchMode.isChecked = isDarkMode
             binding.tvModeSetting.text = if (!isDarkMode) "Light Mode" else "Dark Mode"
         }

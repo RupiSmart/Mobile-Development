@@ -2,8 +2,6 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:state_checked="true"
-        android:drawable="@drawable/thumbtrue_normal"/>
-    <item
-        android:state_checked="false"
-        android:drawable="@drawable/thumbfalse_normal"/>
+        android:drawable="@drawable/photo_camera_filled_24px" />
+    <item android:drawable="@drawable/photo_camera_24px" />
 </selector>

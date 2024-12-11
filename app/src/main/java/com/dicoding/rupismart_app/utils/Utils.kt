@@ -1,30 +1,23 @@
 package com.dicoding.rupismart_app.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.ImageFormat
-import android.graphics.Rect
-import android.graphics.YuvImage
 import android.media.AudioAttributes
-import android.media.Image
 import android.media.SoundPool
 import android.text.format.DateUtils
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.camera.core.ImageProxy
 import com.dicoding.rupismart_app.R
-import com.dicoding.rupismart_app.data.remote.response.PredictionTime
 import com.google.android.material.switchmaterial.SwitchMaterial
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.TimeZone
 
-fun ThemeisDark(isDarkModeActive: Boolean, switchTheme: SwitchMaterial? = null) {
+fun themeIsDark(isDarkModeActive: Boolean, switchTheme: SwitchMaterial? = null) {
     if (isDarkModeActive) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         switchTheme?.isChecked = true
@@ -33,34 +26,14 @@ fun ThemeisDark(isDarkModeActive: Boolean, switchTheme: SwitchMaterial? = null) 
         switchTheme?.isChecked = false
     }
 }
- fun ImageProxy.imageProxyToBitmap(): Bitmap {
-    val yBuffer = planes[0].buffer
-    val uBuffer = planes[1].buffer
-    val vBuffer = planes[2].buffer
 
-    val ySize = yBuffer.remaining()
-    val uSize = uBuffer.remaining()
-    val vSize = vBuffer.remaining()
-
-    val nv21 = ByteArray(ySize + uSize + vSize)
-
-    yBuffer.get(nv21, 0, ySize)
-    vBuffer.get(nv21, ySize, vSize)
-    uBuffer.get(nv21, ySize + vSize, uSize)
-
-    val yuvImage = YuvImage(nv21, ImageFormat.NV21, width, height, null)
-    val out = ByteArrayOutputStream()
-    yuvImage.compressToJpeg(Rect(0, 0, width, height), 100, out)
-    val byteArray = out.toByteArray()
-    return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-}
+@SuppressLint("StringFormatInvalid")
 fun String.formatTimestamp(context: Context): String {
+
     val timestamp = this.toLong()
     val currentTime = System.currentTimeMillis()
-
     val timeDiff = currentTime - timestamp
-
-    val locale = Locale.getDefault() 
+    val locale = Locale.getDefault()
 
     return when {
         timeDiff < DateUtils.MINUTE_IN_MILLIS -> {
@@ -68,7 +41,7 @@ fun String.formatTimestamp(context: Context): String {
         }
         timeDiff < DateUtils.HOUR_IN_MILLIS -> {
             val minutes = timeDiff / DateUtils.MINUTE_IN_MILLIS
-           context .getString(R.string.min_ago, minutes.toString())
+           context.getString(R.string.min_ago, minutes.toString())
         }
         timeDiff < DateUtils.DAY_IN_MILLIS -> {
             val hours = timeDiff / DateUtils.HOUR_IN_MILLIS
@@ -83,36 +56,8 @@ fun String.formatTimestamp(context: Context): String {
         }
     }
 }
-fun imageProxyToBitmap(imageProxy: ImageProxy) {
- /*   val image: Image = imageProxy.image ?: return null
-    val buffer: ByteBuffer = image.planes[0].buffer
-    val bytes = ByteArray(buffer.remaining())
-    buffer.get(bytes)
 
-    // Decode byte array to bitmap
-    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-
-    // Close image proxy when done
-    imageProxy.close()
-
-    return bitmap*/
-}
 fun reduceIMage(file:File): File {
-    val bitmap = BitmapFactory.decodeFile(file.path)
-    var compressQuality = 100
-    var streamLength:Int
-    do{
-        val bmpStream = ByteArrayOutputStream()
-        bitmap?.compress(Bitmap.CompressFormat.JPEG,compressQuality,bmpStream)
-        val bmpPicByteArray = bmpStream.toByteArray()
-        streamLength = bmpPicByteArray.size
-        compressQuality -=5
-    }while(streamLength> MAXIMAL_SIZE)
-    bitmap?.compress(Bitmap.CompressFormat.JPEG,compressQuality, FileOutputStream(file))
-    return file
-}
-fun File.reduceFileImage(): File {
-    val file = this
     val bitmap = BitmapFactory.decodeFile(file.path)
     var compressQuality = 100
     var streamLength:Int
@@ -166,18 +111,18 @@ object SoundPoolPlayer {
 }
 fun getNominal(index: Int): String {
     return when (index) {
-        0 -> "100"
-        1 -> "500"
-        2 -> "100.000"
-        3 -> "10.000"
-        4 -> "1.000"
-        5 -> "200"
-        6 -> "1.000"
-        7 -> "2.000"
-        8 -> "20.000"
-        9 -> "50.000"
-        10 -> "5.000"
-        11 -> "75.000"
+        0 -> "IDR 100.00"
+        1 -> "IDR 500.00"
+        2 -> "IDR 100,000.00"
+        3 -> "IDR 10,000.00"
+        4 -> "IDR 1,000.00"
+        5 -> "IDR 200.00"
+        6 -> "IDR 20,000.00"
+        7 -> "IDR 2,000.00"
+        8 -> "IDR 20,000.00"
+        9 -> "IDR 50,000.00"
+        10 -> "IDR 5,000.00"
+        11 -> "IDR 75,000.00"
         else -> ""
     }
 

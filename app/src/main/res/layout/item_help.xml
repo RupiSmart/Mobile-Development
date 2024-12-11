@@ -21,6 +21,7 @@
         tools:text="1" />
 
     <ImageView
+        android:contentDescription="@string/help_image"
         android:id="@+id/iv_help_image"
         android:layout_width="320dp"
         android:layout_height="240dp"
@@ -40,7 +41,7 @@
         android:gravity="center"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        tools:text="@string/text_to_speech"
+        tools:text="text_to_speech"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_help_image"
@@ -53,7 +54,7 @@
         android:gravity="center"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
-        tools:text="@string/text_to_speech"
+        tools:text="text_to_speech"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_title_help"

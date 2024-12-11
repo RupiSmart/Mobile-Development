@@ -5,10 +5,10 @@
     android:id="@+id/history_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center"
-   >
+    android:layout_gravity="center">
 
         <ImageView
+            android:contentDescription="@string/verified"
             android:id="@+id/iv_history"
             android:layout_width="20dp"
             android:layout_height="20dp"
@@ -31,6 +31,7 @@
             card_view:layout_constraintStart_toEndOf="@+id/iv_history"
             card_view:layout_constraintTop_toTopOf="@+id/iv_history"
             tools:text="SERATUS RIBU RUPIAH" />
+
         <TextView
             android:id="@+id/tv_nominal"
             android:layout_width="0dp"
@@ -58,9 +59,5 @@
             card_view:layout_constraintStart_toEndOf="@+id/iv_history"
             card_view:layout_constraintTop_toTopOf="@+id/tvItem"
             card_view:layout_constraintVertical_bias="1.0"
-            tools:text="21 November 2024   18:14 WIB"
-
-            />
-
-
+            tools:text="21 November 2024   18:14 WIB" />
     </androidx.constraintlayout.widget.ConstraintLayout>

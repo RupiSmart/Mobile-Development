@@ -26,13 +26,15 @@
             app:navigationIcon="@drawable/logo"
             app:title="@string/title_camera" />
     </com.google.android.material.appbar.AppBarLayout>
+
     <androidx.camera.view.PreviewView
-        android:contentDescription="@string/click_one"
         android:id="@+id/viewFinder"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:contentDescription="@string/click_one"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
+        tools:ignore="RedundantDescriptionCheck" />
 
     <androidx.camera.view.PreviewView
         android:visibility="gone"
@@ -103,11 +105,11 @@
         android:orientation="vertical"
         android:paddingHorizontal="10dp"
         android:visibility="gone"
-
         app:layout_constraintBottom_toBottomOf="@+id/previewArea"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/previewArea"
+        tools:ignore="TextSizeCheck"
         tools:visibility="visible">
 
         <RelativeLayout
@@ -125,7 +127,8 @@
                 android:layout_marginTop="2dp"
                 android:layout_marginEnd="5dp"
                 android:src="@drawable/baseline_check_circle_24"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                tools:ignore="ContentDescription,ImageContrastCheck" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -140,9 +143,20 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_alignParentEnd="true"
+                android:contentDescription="@string/intro_logo"
                 android:scaleType="fitCenter"
                 android:src="@drawable/logo_icon_notif" />
         </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/not_found"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="120dp"
+            android:layout_marginTop="12dp"
+            android:src="@drawable/frame_inspect_24px"
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/nominal_number"
