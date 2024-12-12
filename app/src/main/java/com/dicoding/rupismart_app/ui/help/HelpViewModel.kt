@@ -9,5 +9,5 @@ import okhttp3.RequestBody
 
 class HelpViewModel(private val rupiSmartRepository: RupiSmartRepository) : ViewModel() {
 
-    val getAllHelp = rupiSmartRepository.getAllHelp()
+    fun getAllHelp(locale:String ) = rupiSmartRepository.getAllHelp(locale)
 }

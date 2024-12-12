@@ -59,7 +59,7 @@ class RupiSmartRepository private constructor(
         emitSource(localData)
     }
 
-    fun getAllHelp(): LiveData<Result<HelpResponse>> = liveData {
+    fun getAllHelp(locale:String): LiveData<Result<HelpResponse>> = liveData {
         emit(Result.Loading)
         try {
             val response = apiService.getAllHelp()

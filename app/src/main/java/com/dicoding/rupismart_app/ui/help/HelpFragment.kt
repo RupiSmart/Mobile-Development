@@ -27,6 +27,7 @@ class HelpFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var tts: TextToSpeech
     private var panduan: String =""
+    private var isSettingActivity:Boolean=false
     private val viewModel by viewModels<HelpViewModel> {
         ViewModelFactory.getInstance(requireContext())
     }
@@ -47,7 +48,9 @@ class HelpFragment : Fragment() {
 
         val adapter = HelpAdapter()
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
-        viewModel.getAllHelp.observe(viewLifecycleOwner){result->
+        val locale=Locale.getDefault().country.toString()
+        Toast.makeText(requireContext(), locale, Toast.LENGTH_SHORT).show()
+        viewModel.getAllHelp(locale).observe(viewLifecycleOwner){result->
             when(result){
                 is Result.Loading -> {binding.progressBar.visibility = View.VISIBLE}
                 is Result.Error -> {
@@ -60,7 +63,9 @@ class HelpFragment : Fragment() {
                     for (category in categories) {
                         panduan+="${category.title},${category.text}"
                     }
-                    tspeech(panduan)
+                    if(!isSettingActivity){
+                        tspeech(panduan)
+                    }
                     binding.progressBar.visibility = View.GONE
                     adapter.submitList(result.data.categories).apply {
                         binding.rvHelp.setHasFixedSize(false)
@@ -74,6 +79,7 @@ class HelpFragment : Fragment() {
         binding.mainAppBar.setOnMenuItemClickListener { menuItem ->
             when(menuItem.itemId){
                 R.id.setting -> {
+                    isSettingActivity=true
                     startActivity(Intent(requireContext(), SettingActivity::class.java))
                    tts.stop()
                     true
@@ -106,6 +112,12 @@ class HelpFragment : Fragment() {
         } else {
             tts.speak(message, TextToSpeech.QUEUE_ADD, null, null)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        isSettingActivity=false
+
     }
 
     override fun onDestroyView() {
