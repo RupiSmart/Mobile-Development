@@ -1,3 +1,16 @@
+# Rupismart Mobile App
+
+
+## Mobile Tech Stack
+The Rupismart mobile app is built using the following technologies:
+
+- Android Studio: The official IDE for Android app development.
+- Kotlin Programming Language: A modern programming language for developing Android apps.
+- Datastore: A data storage solution for managing app preferences and settings.
+- Camerax: A camera library for capturing fruit images within the app.
+- Retrofit2: A type-safe HTTP client for making API requests.
+- Text-to-Speech:Converts text into spoken audio for accessibility and user interaction.
+
 ## Project Installation Guide
 To install and run the Fruitarians mobile app on your local machine, follow the steps below:
 
