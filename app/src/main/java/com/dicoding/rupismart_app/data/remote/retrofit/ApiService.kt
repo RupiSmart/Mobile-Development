@@ -9,11 +9,13 @@ package com.dicoding.rupismart_app.data.remote.retrofit
     import retrofit2.http.Multipart
     import retrofit2.http.POST
     import retrofit2.http.Part
+    import retrofit2.http.Query
 
 interface ApiService {
     @GET("help")
     suspend fun getAllHelp(
-    ) : HelpResponse
+        @Query("lang") lang: String
+    ): HelpResponse
 
     @GET("history")
     suspend fun getAllHistory(

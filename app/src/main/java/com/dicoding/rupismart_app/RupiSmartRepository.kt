@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Base64
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
@@ -17,27 +16,18 @@ import com.dicoding.rupismart_app.data.remote.retrofit.ApiService
 import com.dicoding.rupismart_app.utils.AppExecutors
 import com.google.gson.Gson
 import retrofit2.HttpException
-import com.dicoding.rupismart_app.data.remote.response.HistoryResponse
 import com.dicoding.rupismart_app.data.remote.response.PredictResponse
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import com.dicoding.rupismart_app.data.local.entity.HistoryEntity
 import com.dicoding.rupismart_app.data.local.room.RupismartDao
-import com.dicoding.rupismart_app.data.remote.retrofit.RetrofitInstance
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.ByteArrayOutputStream
 import com.dicoding.rupismart_app.data.Result
-import com.dicoding.rupismart_app.data.remote.response.PredictionTime
 import com.dicoding.rupismart_app.utils.getNominal
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.TimeZone
 
 class RupiSmartRepository private constructor(
     private val apiService: ApiService,
@@ -62,7 +52,8 @@ class RupiSmartRepository private constructor(
     fun getAllHelp(locale:String): LiveData<Result<HelpResponse>> = liveData {
         emit(Result.Loading)
         try {
-            val response = apiService.getAllHelp()
+        val lang=locale.lowercase()
+            val response =  apiService.getAllHelp(lang)
             emit(Result.Success(response))
         } catch (e: HttpException) {
             val jsonInString = e.response()?.errorBody()?.string()

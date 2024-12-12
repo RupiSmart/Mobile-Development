@@ -48,7 +48,10 @@ class HelpFragment : Fragment() {
 
         val adapter = HelpAdapter()
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
-        val locale=Locale.getDefault().country.toString()
+        var locale=Locale.getDefault().language
+        if(locale=="in"){
+            locale="id"
+        }
         Toast.makeText(requireContext(), locale, Toast.LENGTH_SHORT).show()
         viewModel.getAllHelp(locale).observe(viewLifecycleOwner){result->
             when(result){

@@ -7,6 +7,9 @@ data class HelpResponse(
 	@field:SerializedName("success")
 	val success: Boolean,
 
+	@field:SerializedName("language")
+	val language: String,
+
 	@field:SerializedName("categories")
 	val categories: List<CategoriesItem>
 )

@@ -19,6 +19,7 @@ import com.dicoding.rupismart_app.adapter.historyAdapter
 import com.dicoding.rupismart_app.databinding.FragmentHistoryBinding
 import com.dicoding.rupismart_app.ui.setting.SettingActivity
 import com.dicoding.rupismart_app.data.Result
+import java.util.Locale
 
 class HistoryFragment : Fragment() {
     private var _binding: FragmentHistoryBinding? = null
@@ -44,7 +45,7 @@ class HistoryFragment : Fragment() {
 
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         val adapter = historyAdapter()
-        viewModel.getAllHistory.observe(viewLifecycleOwner){result->
+        viewModel.getAllHistory.observe(viewLifecycleOwner){ result->
             when(result){
                 is Result.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
