@@ -52,7 +52,6 @@ class HelpFragment : Fragment() {
         if(locale=="in"){
             locale="id"
         }
-        Toast.makeText(requireContext(), locale, Toast.LENGTH_SHORT).show()
         viewModel.getAllHelp(locale).observe(viewLifecycleOwner){result->
             when(result){
                 is Result.Loading -> {binding.progressBar.visibility = View.VISIBLE}
