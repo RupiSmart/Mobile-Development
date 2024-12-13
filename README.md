@@ -38,6 +38,11 @@ To view or customize the app's design, use Figma. Check out the design file here
 [🌐 View on Figma](https://www.figma.com/design/bCo19HpMbK20D4S7kqTQrv/CAPSTONE?node-id=0-1&t=yxa8AajVwGTOILYI-1)
 
 ---
+## 🤖 **Try Our App**
+Install the app and experience the convenience of identifying currency denominations instantly and effortlessly.
+[🔗 Rupismart App](https://drive.google.com/file/d/1mR5sYWgr9jsBJna5J82cAmPlOeKYCQTn/view?usp=sharing)
+
+---
 
 ## 📚 **More Resources**
 For detailed instructions and troubleshooting tips, please visit the project's GitHub repository:
